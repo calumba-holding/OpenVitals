@@ -38,9 +38,9 @@ export function Nav() {
           {/* Left: logo + desktop nav */}
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2">
-              <Logo className="size-6" />
+              <Logo className="size-6 text-accent-600 animate-spin-yoyo" />
               <span
-                className="text-[14px] font-semibold text-neutral-900"
+                className="text-[16px] font-semibold text-neutral-900"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 OpenVitals
