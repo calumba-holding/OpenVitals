@@ -1,0 +1,18 @@
+import { createRouter } from './init';
+import { observationsRouter } from './routers/observations';
+import { medicationsRouter } from './routers/medications';
+import { importJobsRouter } from './routers/importJobs';
+import { sharingRouter } from './routers/sharing';
+import { aiRouter } from './routers/ai';
+import { preferencesRouter } from './routers/preferences';
+
+export const appRouter = createRouter({
+  observations: observationsRouter,
+  medications: medicationsRouter,
+  importJobs: importJobsRouter,
+  sharing: sharingRouter,
+  ai: aiRouter,
+  preferences: preferencesRouter,
+});
+
+export type AppRouter = typeof appRouter;
