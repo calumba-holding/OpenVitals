@@ -153,10 +153,10 @@ export default function UploadsPage() {
         {jobsLoading ? (
           <div className="h-40 animate-pulse rounded-xl border border-neutral-200 bg-neutral-50" />
         ) : recentJobs.length === 0 ? (
-          <EmptyState
-            icon="📄"
+          <AnimatedEmptyState
             title="No imports yet"
             description="Upload a document above to start processing."
+            cardIcon={({ index }) => emptyIcons[index % emptyIcons.length]!}
           />
         ) : (
           <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
