@@ -10,7 +10,7 @@ services:
         value: vercel
       - key: BLOB_READ_WRITE_TOKEN
         sync: false
-      - key: AI_GATEWAY_URL
+      - key: AI_GATEWAY_API_KEY
         sync: false
       - key: AI_DEFAULT_MODEL
         value: claude-sonnet-4-20250514
