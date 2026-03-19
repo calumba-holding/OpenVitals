@@ -7,27 +7,10 @@ import { TitleActionHeader } from '@/components/title-action-header';
 import { ImportJobRow, ImportJobHeader } from '@/components/health/import-job-row';
 import { AnimatedEmptyState } from '@/components/animated-empty-state';
 import { formatRelativeTime } from '@/lib/health-utils';
+import { DOC_TYPE_LABELS } from '@/lib/constants';
 import { FileText, FileUp, FileScan, FileCheck, FileSearch, FileArchive } from 'lucide-react';
 
 const emptyIcons = [FileText, FileUp, FileScan, FileCheck, FileSearch, FileArchive];
-
-const DOC_TYPE_LABELS: Record<string, string> = {
-  lab_report: 'Lab report',
-  encounter_note: 'Encounter note',
-  imaging_report: 'Imaging report',
-  dental_record: 'Dental record',
-  immunization_record: 'Immunization record',
-  csv_export: 'CSV export',
-  wearable_export: 'Wearable export',
-  unknown: 'Unknown',
-};
-
-function mapStatus(s: string): 'completed' | 'parsing' | 'review_needed' | 'failed' {
-  if (s === 'completed') return 'completed';
-  if (s === 'failed') return 'failed';
-  if (s === 'review_needed') return 'review_needed';
-  return 'parsing';
-}
 
 export default function UploadsPage() {
   const [dragActive, setDragActive] = useState(false);
@@ -35,7 +18,14 @@ export default function UploadsPage() {
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
 
-  const { data: jobsData, isLoading: jobsLoading } = trpc.importJobs.list.useQuery({ limit: 20 });
+  const { data: jobsData, isLoading: jobsLoading } = trpc.importJobs.list.useQuery({ limit: 20 }, {
+    refetchInterval: (query) => {
+      const items = query.state.data?.items;
+      if (!items) return false;
+      const activeStatuses = new Set(['pending', 'classifying', 'parsing', 'normalizing']);
+      return items.some((job) => activeStatuses.has(job.status)) ? 3000 : false;
+    },
+  });
   const createImport = trpc.importJobs.create.useMutation();
   const deleteImport = trpc.importJobs.delete.useMutation({
     onSuccess: () => utils.importJobs.list.invalidate(),
@@ -169,7 +159,7 @@ export default function UploadsPage() {
                 key={job.id}
                 id={job.id}
                 fileName={job.fileName}
-                status={mapStatus(job.status)}
+                status={job.status}
                 docType={DOC_TYPE_LABELS[job.classifiedType ?? ''] ?? job.classifiedType ?? '—'}
                 confidence={job.classificationConfidence != null ? String(job.classificationConfidence.toFixed(2)) : '—'}
                 extractions={job.extractionCount != null ? String(job.extractionCount) : '—'}

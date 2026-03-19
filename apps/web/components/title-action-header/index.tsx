@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { IconButton, Button } from '../button';
-import { Button as ButtonWithChildren } from '../ui/button';
-import { Skeleton } from '../ui/skeleton';
-import { cn } from '../../lib/utils';
-import { ArrowLeftIcon, PlusIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import type { ComponentProps, ReactNode } from 'react';
+import { IconButton, Button } from "../button";
+import { Button as ButtonWithChildren } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
+import { cn } from "../../lib/utils";
+import { ArrowLeftIcon, PlusIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import type { ComponentProps, ReactNode } from "react";
 
 type ButtonProps = ComponentProps<typeof Button>;
 
@@ -50,9 +50,9 @@ export function TitleActionHeader({
   return (
     <div
       className={cn(
-        '@container/title-action-header flex flex-col gap-2',
-        sticky && 'sticky top-0 z-10 bg-background pb-4 -mb-4 pt-4 -mt-4',
-        className
+        "@container/title-action-header flex flex-col gap-2",
+        sticky && "sticky top-0 z-10 bg-background pb-4 -mb-4 pt-4 -mt-4",
+        className,
       )}
     >
       <div className="flex items-center justify-between gap-x-4 gap-y-2 flex-wrap">
@@ -76,8 +76,9 @@ export function TitleActionHeader({
               ) : (
                 <h1
                   className={cn(
-                    'title font-bold text-neutral-900 text-2xl @6xl/title-action-header:text-3xl',
-                    titleClassName
+                    "title font-bold text-neutral-900 text-2xl @6xl/title-action-header:text-3xl",
+                    "font-display",
+                    titleClassName,
                   )}
                 >
                   {title}
@@ -86,7 +87,10 @@ export function TitleActionHeader({
 
               {!!subtitle && (
                 <p
-                  className={cn('mt-1 text-neutral-500 text-base line-clamp-2', subtitleClassName)}
+                  className={cn(
+                    "mt-1 text-neutral-500 text-base line-clamp-2",
+                    subtitleClassName,
+                  )}
                 >
                   {subtitle}
                 </p>
@@ -111,10 +115,12 @@ export function TitleActionHeader({
                   onClick={onSearchButtonClick}
                   variant="outline"
                   className={cn(
-                    'relative h-9 w-full justify-start rounded-[0.5rem] bg-muted/50 font-normal text-neutral-500 text-sm shadow-none sm:pr-12 md:w-40 lg:w-56 xl:w-64'
+                    "relative h-9 w-full justify-start rounded-[0.5rem] bg-muted/50 font-normal text-neutral-500 text-sm shadow-none sm:pr-12 md:w-40 lg:w-56 xl:w-64",
                   )}
                 >
-                  <span className="hidden lg:inline-flex">Search your items...</span>
+                  <span className="hidden lg:inline-flex">
+                    Search your items...
+                  </span>
                   <span className="inline-flex lg:hidden">Search...</span>
                   <kbd className="pointer-events-none absolute top-[0.3rem] right-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-[10px] opacity-100 sm:flex">
                     <span className="text-xs">⌘</span>K
@@ -131,7 +137,7 @@ export function TitleActionHeader({
                   />
                 ) : (
                   <Button
-                    text={addButtonText ?? 'Add'}
+                    text={addButtonText ?? "Add"}
                     icon={<PlusIcon className="h-4 w-4" />}
                     onClick={onAddButtonClick}
                   />

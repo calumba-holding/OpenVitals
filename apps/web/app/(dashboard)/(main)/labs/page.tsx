@@ -13,7 +13,7 @@ import { TestTubes, Droplets, Activity, Microscope, FlaskConical, Dna } from 'lu
 const emptyIcons = [TestTubes, Droplets, Activity, Microscope, FlaskConical, Dna];
 
 export default function LabsPage() {
-  const { data, isLoading } = trpc.observations.list.useQuery({ category: 'lab_result' });
+  const { data, isLoading } = trpc.observations.list.useQuery({ limit: 200 });
   const items = data?.items ?? [];
 
   if (isLoading) {

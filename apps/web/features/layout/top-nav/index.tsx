@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { LogOut, Settings } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { authClient } from '@/lib/auth/client';
-import { Avatar } from '@/components/avatar';
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut, Settings } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth/client";
+import { Avatar } from "@/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,12 +13,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { secondaryNav } from './nav-config';
-import { Logo } from './logo';
-import { PrimaryNav } from './primary-nav';
-import { NavSearch } from './nav-search';
-import { MobileNav } from './mobile-nav';
+} from "@/components/ui/dropdown-menu";
+import { secondaryNav } from "./nav-config";
+import { Logo } from "./logo";
+import { PrimaryNav } from "./primary-nav";
+import { NavSearch } from "./nav-search";
+import { MobileNav } from "./mobile-nav";
 
 export function TopNav() {
   const pathname = usePathname();
@@ -26,9 +26,9 @@ export function TopNav() {
   const { data: session } = authClient.useSession();
 
   return (
-    <header className="sticky top-0 z-50 bg-white h-(--top-nav-height) border-b border-neutral-200">
-      <div className="max-w-[1400px] h-full mx-auto px-4">
-        <div className="flex h-full items-center justify-between">
+    <header className="sticky top-0 z-50 bg-white border-b border-neutral-200">
+      <div className="max-w-[1400px] h-(--top-nav-height) mx-auto px-4">
+        <div className="flex h-full items-center justify-between gap-4">
           {/* Logo + Navigation */}
           <div className="flex items-center gap-6">
             <Logo />
@@ -45,14 +45,16 @@ export function TopNav() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium transition-colors',
+                  "hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium transition-colors",
                   pathname.startsWith(item.href)
-                    ? 'text-accent-700 bg-accent-50'
-                    : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50'
+                    ? "text-accent-700 bg-accent-50"
+                    : "text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50",
                 )}
               >
                 <item.icon className="h-3.5 w-3.5" />
-                <span className="hidden lg:inline">{item.name}</span>
+                <span className="hidden lg:inline whitespace-nowrap min-w-0">
+                  {item.name}
+                </span>
               </Link>
             ))}
 
@@ -63,7 +65,7 @@ export function TopNav() {
                   <button className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
                     <Avatar
                       className="size-8 rounded-full bg-neutral-200"
-                      name={session?.user?.name ?? ''}
+                      name={session?.user?.name ?? ""}
                       src={session?.user?.image ?? undefined}
                     />
                   </button>
@@ -72,7 +74,7 @@ export function TopNav() {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {session?.user?.name ?? 'User'}
+                        {session?.user?.name ?? "User"}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {session?.user?.email}
@@ -90,7 +92,7 @@ export function TopNav() {
                   <DropdownMenuItem
                     onClick={async () => {
                       await authClient.signOut();
-                      router.push('/login');
+                      router.push("/login");
                     }}
                   >
                     <LogOut className="mr-2 h-4 w-4" />

@@ -1,24 +1,19 @@
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
-import { StatusBadge, type HealthStatus } from "./status-badge";
+import { StatusBadge } from "./status-badge";
+import { IMPORT_JOB_STATUS_MAP } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 interface ImportJobRowProps {
   id: string;
   fileName: string;
-  status: "completed" | "parsing" | "review_needed" | "failed";
+  status: string;
   docType: string;
   confidence: string;
   extractions: string;
   time: string;
   onDelete?: () => void;
 }
-
-const statusMap: Record<string, { label: string; badge: HealthStatus }> = {
-  completed: { label: "Completed", badge: "normal" },
-  parsing: { label: "Parsing...", badge: "info" },
-  review_needed: { label: "Needs review", badge: "warning" },
-  failed: { label: "Failed", badge: "critical" },
-};
 
 export function ImportJobRow({
   id,
@@ -30,7 +25,7 @@ export function ImportJobRow({
   time,
   onDelete,
 }: ImportJobRowProps) {
-  const s = statusMap[status] ?? statusMap.completed!;
+  const s = IMPORT_JOB_STATUS_MAP[status] ?? IMPORT_JOB_STATUS_MAP.completed!;
   return (
     <Link
       href={`/uploads/${id}`}
@@ -69,19 +64,21 @@ export function ImportJobRow({
   );
 }
 
+const fields = ["File", "Document type", "Status", "Confidence", "Extracted"];
 export function ImportJobHeader() {
   return (
     <div className="grid grid-cols-[1.8fr_1fr_0.8fr_0.6fr_0.8fr_auto] gap-3 border-b border-neutral-200 bg-neutral-50 px-5 py-2.5">
-      {["File", "Document type", "Status", "Confidence", "Extracted"].map(
-        (h) => (
-          <div
-            key={h}
-            className="text-[11px] font-semibold uppercase tracking-[0.04em] text-neutral-400 font-mono"
-          >
-            {h}
-          </div>
-        ),
-      )}
+      {fields.map((h, index) => (
+        <div
+          key={h}
+          className={cn(
+            "text-[11px] font-semibold uppercase tracking-[0.04em] text-neutral-400 font-mono",
+            index === fields.length - 1 && "text-right",
+          )}
+        >
+          {h}
+        </div>
+      ))}
       <div className="w-8" />
     </div>
   );

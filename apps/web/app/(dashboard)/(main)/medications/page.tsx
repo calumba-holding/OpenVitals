@@ -4,14 +4,20 @@ import { trpc } from '@/lib/trpc/client';
 import { TitleActionHeader } from '@/components/title-action-header';
 import { MedicationCard } from '@/components/health/medication-card';
 import { AnimatedEmptyState } from '@/components/animated-empty-state';
+import { AddMedicationModal } from '@/components/health/add-medication-modal';
+import { useModal } from '@/components/modal/provider';
+import { Button } from '@/components/button';
 import { formatDate } from '@/lib/utils';
-import { Pill, Syringe, Tablets, Heart, ShieldCheck, Stethoscope } from 'lucide-react';
+import { Pill, Plus, Syringe, Tablets, Heart, ShieldCheck, Stethoscope } from 'lucide-react';
 
 const emptyIcons = [Pill, Syringe, Tablets, Heart, ShieldCheck, Stethoscope];
 
 export default function MedicationsPage() {
+  const modal = useModal();
   const { data, isLoading } = trpc.medications.list.useQuery({});
   const items = data?.items ?? [];
+
+  const openAddModal = () => modal.show(<AddMedicationModal />);
 
   if (isLoading) {
     return (
@@ -29,12 +35,15 @@ export default function MedicationsPage() {
   if (items.length === 0) {
     return (
       <div>
-        <TitleActionHeader title="Medications" subtitle="Track your medications, supplements, and adherence." />
+        <TitleActionHeader title="Medications" subtitle="Track your medications, supplements, and adherence." onAddButtonClick={openAddModal} addButtonText="Add medication" />
         <div className="mt-7">
           <AnimatedEmptyState
             title="No medications tracked yet"
             description="Add a medication to start tracking your prescriptions, supplements, and adherence."
             cardIcon={({ index }) => emptyIcons[index % emptyIcons.length]!}
+            addButton={
+              <Button text="Add medication" icon={<Plus className="h-4 w-4" />} onClick={openAddModal} />
+            }
           />
         </div>
       </div>
@@ -46,7 +55,7 @@ export default function MedicationsPage() {
 
   return (
     <div>
-      <TitleActionHeader title="Medications" subtitle="Track your medications, supplements, and adherence." />
+      <TitleActionHeader title="Medications" subtitle="Track your medications, supplements, and adherence." onAddButtonClick={openAddModal} addButtonText="Add medication" />
 
       {active.length > 0 && (
         <div className="mt-7 mb-6">

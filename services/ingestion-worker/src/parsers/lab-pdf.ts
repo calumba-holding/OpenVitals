@@ -61,7 +61,7 @@ export async function parseLabPdf(ctx: WorkflowContext): Promise<ParseResult> {
     return { extractions: [], rawMetadata: { parser: 'lab-pdf', version: '0.1.0', error: 'parse_failed' } };
   }
 
-  const collectionDate = parsed.collectionDate ?? new Date().toISOString().split('T')[0];
+  const fallbackDate = parsed.collectionDate ?? new Date().toISOString().split('T')[0];
 
   const extractions: RawExtraction[] = (parsed.results ?? []).map((r: any) => ({
     analyte: r.analyte ?? '',
@@ -72,7 +72,7 @@ export async function parseLabPdf(ctx: WorkflowContext): Promise<ParseResult> {
     referenceRangeHigh: typeof r.referenceRangeHigh === 'number' ? r.referenceRangeHigh : null,
     referenceRangeText: r.referenceRangeText ?? null,
     isAbnormal: typeof r.isAbnormal === 'boolean' ? r.isAbnormal : null,
-    observedAt: collectionDate,
+    observedAt: r.observedAt ?? fallbackDate,
     category: 'lab_result' as const,
   }));
 

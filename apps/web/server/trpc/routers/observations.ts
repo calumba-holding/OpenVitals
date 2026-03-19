@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, ne } from 'drizzle-orm';
 import { createRouter, protectedProcedure } from '../init';
-import { listObservations, getObservationTrend, getObservationWithProvenance, observations } from '@openvitals/database';
+import { listObservations, getObservationTrend, getObservationWithProvenance, observations, importJobs } from '@openvitals/database';
 
 export const observationsRouter = createRouter({
   list: protectedProcedure
@@ -120,10 +120,33 @@ export const observationsRouter = createRouter({
         .update(observations)
         .set({ status: 'confirmed', updatedAt: new Date() })
         .where(and(eq(observations.id, input.id), eq(observations.userId, ctx.userId)))
-        .returning();
+        .returning({ importJobId: observations.importJobId });
 
       if (!result.length) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Observation not found' });
+      }
+
+      // If all observations for this import job are now confirmed/corrected, mark job completed
+      const jobId = result[0]!.importJobId;
+      if (jobId) {
+        const pending = await ctx.db
+          .select({ id: observations.id })
+          .from(observations)
+          .where(
+            and(
+              eq(observations.importJobId, jobId),
+              eq(observations.userId, ctx.userId),
+              eq(observations.status, 'extracted'),
+            ),
+          )
+          .limit(1);
+
+        if (pending.length === 0) {
+          await ctx.db
+            .update(importJobs)
+            .set({ status: 'completed', needsReview: false, completedAt: new Date(), updatedAt: new Date() })
+            .where(and(eq(importJobs.id, jobId), eq(importJobs.userId, ctx.userId)));
+        }
       }
 
       return { success: true };
