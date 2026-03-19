@@ -4,20 +4,23 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch --env-file=.env src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/gateway": "^3.0.66",
+    "@openvitals/ai": "workspace:*",
+    "@openvitals/blob-storage": "workspace:*",
     "@openvitals/common": "workspace:*",
     "@openvitals/database": "workspace:*",
-    "@openvitals/blob-storage": "workspace:*",
-    "@openvitals/ai": "workspace:*",
-    "@openvitals/ingestion": "workspace:*",
     "@openvitals/events": "workspace:*",
+    "@openvitals/ingestion": "workspace:*",
     "ai": "^6.0.116",
-    "pdf-parse": "^2.4.5"
+    "drizzle-orm": "^0.45.1",
+    "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^5.5.207"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

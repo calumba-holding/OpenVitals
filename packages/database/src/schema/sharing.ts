@@ -15,7 +15,7 @@ import { users } from './users';
 
 export const sharePolicies = pgTable('share_policies', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   name: varchar('name', { length: 255 }).notNull(),
@@ -51,7 +51,7 @@ export const accessGrants = pgTable('access_grants', {
     .notNull()
     .references(() => sharePolicies.id, { onDelete: 'cascade' }),
   recipientEmail: varchar('recipient_email', { length: 255 }),
-  recipientUserId: uuid('recipient_user_id').references(() => users.id),
+  recipientUserId: text('recipient_user_id').references(() => users.id),
   token: varchar('token', { length: 255 }).unique().notNull(),
   hasPassword: boolean('has_password').default(false),
   passwordHash: text('password_hash'),

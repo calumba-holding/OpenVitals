@@ -17,7 +17,7 @@ import { users } from './users';
 
 export const dataSources = pgTable('data_sources', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   name: varchar('name', { length: 255 }).notNull(),
@@ -35,7 +35,7 @@ export const sourceArtifacts = pgTable(
   'source_artifacts',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     dataSourceId: uuid('data_source_id').references(() => dataSources.id),
@@ -63,7 +63,7 @@ export const sourceArtifacts = pgTable(
 
 export const importJobs = pgTable('import_jobs', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   sourceArtifactId: uuid('source_artifact_id')

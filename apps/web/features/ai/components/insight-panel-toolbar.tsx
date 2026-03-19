@@ -15,10 +15,10 @@ export function InsightPanelToolbar({ title, isReady, onClose, onDownload, onSha
     <div className="flex h-12 shrink-0 items-center justify-between border-b border-neutral-200 px-4">
       <div className="flex items-center gap-2 min-w-0">
         <FileText className="size-4 shrink-0 text-accent-500" />
-        <span className="truncate text-[13px] font-medium text-neutral-800" style={{ fontFamily: 'var(--font-body)' }}>
+        <span className="truncate text-[13px] font-medium text-neutral-800 font-body">
           {title}
         </span>
-        <span className="shrink-0 rounded-md bg-accent-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-accent-600" style={{ fontFamily: 'var(--font-mono)' }}>
+        <span className="shrink-0 rounded-md bg-accent-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-accent-600 font-mono">
           Insight
         </span>
       </div>

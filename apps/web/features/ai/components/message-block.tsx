@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { Logo } from '@/assets/app/images/logo';
 import { ProvenancePill } from '@/components/health/provenance-pill';
 
 export interface ChatMessageData {
@@ -27,16 +28,12 @@ export function MessageBlock({ message, onArtifactClick }: MessageBlockProps) {
         )}
         style={!isUser ? { background: 'linear-gradient(135deg, #3162FF, #1D3DB3)' } : undefined}
       >
-        {isUser ? 'U' : (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M12 3C7.5 3 4 6 4 9.5c0 2.5 1.5 4.5 3.5 5.5L6 21l3-2 3 2 3-2 3 2-1.5-6c2-1 3.5-3 3.5-5.5C21 6 17.5 3 12 3z" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        )}
+        {isUser ? 'U' : <Logo className="size-3.5 text-white" />}
       </div>
 
       <div className={cn('flex max-w-[85%] flex-col gap-2', isUser ? 'items-end' : 'items-start')}>
         {!isUser && (
-          <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-accent-500" style={{ fontFamily: 'var(--font-mono)' }}>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-accent-500 font-mono">
             OpenVitals AI
           </span>
         )}
@@ -53,8 +50,8 @@ export function MessageBlock({ message, onArtifactClick }: MessageBlockProps) {
               </svg>
             </div>
             <div>
-              <div className="text-[13px] font-medium text-accent-800" style={{ fontFamily: 'var(--font-body)' }}>Health Insight Generated</div>
-              <div className="text-[11px] text-accent-500" style={{ fontFamily: 'var(--font-mono)' }}>Click to view in panel &rarr;</div>
+              <div className="text-[13px] font-medium text-accent-800 font-body">Health Insight Generated</div>
+              <div className="text-[11px] text-accent-500 font-mono">Click to view in panel &rarr;</div>
             </div>
           </button>
         )}
@@ -62,12 +59,11 @@ export function MessageBlock({ message, onArtifactClick }: MessageBlockProps) {
         {/* Message bubble */}
         <div
           className={cn(
-            'px-4 py-3',
+            'px-4 py-3 font-body text-[14px] leading-[1.65] tracking-[0.005em]',
             isUser
               ? 'rounded-[16px_16px_4px_16px] bg-accent-500 text-white'
               : 'rounded-[4px_16px_16px_16px] border border-neutral-200 bg-white text-neutral-800'
           )}
-          style={{ fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.65, letterSpacing: '0.005em' }}
         >
           {message.content}
         </div>

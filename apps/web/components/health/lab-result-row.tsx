@@ -29,10 +29,10 @@ export function LabResultRow({ metric, value, unit, range, trend, status, date }
   return (
     <div className="grid grid-cols-[1.6fr_0.9fr_1.2fr_0.8fr_1fr] items-center gap-3 border-b border-neutral-100 px-5 py-3.5 transition-colors hover:bg-neutral-50 cursor-pointer">
       <div>
-        <div className="text-sm font-medium text-neutral-900" style={{ fontFamily: 'var(--font-body)' }}>
+        <div className="text-sm font-medium text-neutral-900 font-body">
           {metric}
         </div>
-        <div className="mt-0.5 text-[11px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>
+        <div className="mt-0.5 text-[11px] text-neutral-400 font-mono">
           {date}
         </div>
       </div>
@@ -46,11 +46,11 @@ export function LabResultRow({ metric, value, unit, range, trend, status, date }
         >
           {value}
         </span>
-        <span className="text-[11px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>
+        <span className="text-[11px] text-neutral-400 font-mono">
           {unit}
         </span>
       </div>
-      <div className="text-xs text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>
+      <div className="text-xs text-neutral-400 font-mono">
         {range}
       </div>
       <StatusBadge status={status} label={statusLabel[status] ?? status} />
@@ -67,8 +67,7 @@ export function LabResultHeader() {
       {['Metric', 'Value', 'Reference range', 'Status', 'Trend'].map((h) => (
         <div
           key={h}
-          className="text-[11px] font-semibold uppercase tracking-[0.04em] text-neutral-400"
-          style={{ fontFamily: 'var(--font-mono)' }}
+          className="text-[11px] font-semibold uppercase tracking-[0.04em] text-neutral-400 font-mono"
         >
           {h}
         </div>

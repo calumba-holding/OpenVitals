@@ -14,7 +14,6 @@ export function ProvenancePill({ label, icon, className }: ProvenancePillProps) 
         'bg-secondary-50 border-secondary-200',
         className
       )}
-      style={{ fontFamily: 'var(--font-mono)' }}
     >
       <span className="text-xs leading-none">{icon}</span>
       {label}

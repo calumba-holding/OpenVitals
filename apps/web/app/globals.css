@@ -2,6 +2,8 @@
 
 @theme {
   --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
 
   /* Primary — Ultramarine Blue */
   --color-accent-50: #EEF1FF;
@@ -253,6 +255,16 @@
     border-radius: var(--radius-full);
     transition: width 0.3s ease;
   }
+}
+
+/* Infinite scroll animation for empty states */
+@keyframes infinite-scroll-y {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(var(--scroll, -50%)); }
+}
+
+.animate-infinite-scroll-y {
+  animation: infinite-scroll-y 10s linear infinite;
 }
 
 /* Custom scrollbar */

@@ -1,3 +1,6 @@
+import { getDb } from '@openvitals/database/client';
+import { importJobs } from '@openvitals/database';
+import { eq } from 'drizzle-orm';
 import type { WorkflowContext } from '../workflow';
 import type { ParseResult } from '@openvitals/ingestion';
 import { parseLabPdf } from '../parsers/lab-pdf';
@@ -9,7 +12,12 @@ const parserMap: Record<string, (ctx: WorkflowContext) => Promise<ParseResult>> 
 };
 
 export async function parse(ctx: WorkflowContext, documentType: string): Promise<ParseResult> {
-  // TODO: Update import_jobs status = 'parsing'
+  const db = getDb();
+
+  await db.update(importJobs)
+    .set({ status: 'parsing' })
+    .where(eq(importJobs.id, ctx.importJobId));
+
   console.log(`[parse] Parsing as ${documentType} for artifact=${ctx.artifactId}`);
 
   const parser = parserMap[documentType];
@@ -18,5 +26,11 @@ export async function parse(ctx: WorkflowContext, documentType: string): Promise
     return { extractions: [] };
   }
 
-  return parser(ctx);
+  const result = await parser(ctx);
+
+  await db.update(importJobs)
+    .set({ parseCompletedAt: new Date(), parserId: documentType, parserVersion: '0.1.0' })
+    .where(eq(importJobs.id, ctx.importJobId));
+
+  return result;
 }

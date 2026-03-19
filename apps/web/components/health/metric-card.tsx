@@ -39,8 +39,7 @@ export function MetricCard({ title, value, unit, delta, deltaDirection, sparkDat
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-5 min-w-0">
       <div
-        className="text-[13px] font-medium tracking-[0.02em] text-neutral-500"
-        style={{ fontFamily: 'var(--font-body)' }}
+        className="text-[13px] font-medium tracking-[0.02em] text-neutral-500 font-body"
       >
         {title}
       </div>
@@ -55,8 +54,7 @@ export function MetricCard({ title, value, unit, delta, deltaDirection, sparkDat
           {value}
         </span>
         <span
-          className="text-[13px] text-neutral-400"
-          style={{ fontFamily: 'var(--font-mono)' }}
+          className="text-[13px] text-neutral-400 font-mono"
         >
           {unit}
         </span>

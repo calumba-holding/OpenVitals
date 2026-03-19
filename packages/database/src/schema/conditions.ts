@@ -15,7 +15,7 @@ import { sourceArtifacts, importJobs } from './sources';
 
 export const conditions = pgTable('conditions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   name: varchar('name', { length: 255 }).notNull(),

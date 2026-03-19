@@ -50,7 +50,6 @@ export function StatusBadge({ status, label, className }: StatusBadgeProps) {
         s.bg, s.text, s.border,
         className
       )}
-      style={{ fontFamily: 'var(--font-body)' }}
     >
       <span className={cn('h-1.5 w-1.5 rounded-full', s.dot)} />
       {label}

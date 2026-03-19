@@ -1,5 +1,7 @@
 import { z } from 'zod';
+import { TRPCError } from '@trpc/server';
 import { createRouter, protectedProcedure } from '../init';
+import { listMedications, createMedication, updateMedication, logMedicationAdherence } from '@openvitals/database';
 
 export const medicationsRouter = createRouter({
   list: protectedProcedure
@@ -8,8 +10,12 @@ export const medicationsRouter = createRouter({
       category: z.string().optional(),
     }))
     .query(async ({ ctx, input }) => {
-      // TODO: Implement
-      return { items: [] };
+      const items = await listMedications(ctx.db, {
+        userId: ctx.userId,
+        isActive: input.isActive,
+        category: input.category,
+      });
+      return { items };
     }),
 
   create: protectedProcedure
@@ -26,8 +32,20 @@ export const medicationsRouter = createRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      // TODO: Implement
-      return { id: '' };
+      const row = await createMedication(ctx.db, {
+        userId: ctx.userId,
+        name: input.name,
+        genericName: input.genericName,
+        category: input.category,
+        dosage: input.dosage,
+        frequency: input.frequency,
+        route: input.route,
+        prescriber: input.prescriber,
+        indication: input.indication,
+        startDate: input.startDate?.toISOString().split('T')[0],
+        notes: input.notes,
+      });
+      return { id: row.id };
     }),
 
   update: protectedProcedure
@@ -41,7 +59,19 @@ export const medicationsRouter = createRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      // TODO: Implement
+      const result = await updateMedication(ctx.db, {
+        id: input.id,
+        userId: ctx.userId,
+        name: input.name,
+        dosage: input.dosage,
+        frequency: input.frequency,
+        isActive: input.isActive,
+        endDate: input.endDate?.toISOString().split('T')[0],
+        notes: input.notes,
+      });
+      if (!result) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Medication not found' });
+      }
       return { success: true };
     }),
 
@@ -54,7 +84,14 @@ export const medicationsRouter = createRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      // TODO: Implement
+      await logMedicationAdherence(ctx.db, {
+        userId: ctx.userId,
+        medicationId: input.medicationId,
+        logDate: input.logDate.toISOString().split('T')[0]!,
+        taken: input.taken,
+        timeOfDay: input.timeOfDay,
+        notes: input.notes,
+      });
       return { success: true };
     }),
 });

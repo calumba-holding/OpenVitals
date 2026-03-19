@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { ProvenancePill } from './provenance-pill';
 
 interface AIMessageBubbleProps {
@@ -14,19 +15,18 @@ export function AIMessageBubble({ role, content, sources }: AIMessageBubbleProps
     >
       {isAI && (
         <span
-          className="text-[10px] font-semibold uppercase tracking-[0.06em] text-accent-500"
-          style={{ fontFamily: 'var(--font-mono)' }}
+          className="text-[10px] font-semibold uppercase tracking-[0.06em] text-accent-500 font-mono"
         >
           OpenVitals AI
         </span>
       )}
       <div
-        className={
+        className={cn(
           isAI
             ? 'rounded-[4px_16px_16px_16px] border border-neutral-200 bg-white px-[18px] py-3.5 text-neutral-800'
-            : 'rounded-[16px_16px_4px_16px] bg-accent-500 px-[18px] py-3.5 text-white'
-        }
-        style={{ fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.65, letterSpacing: '0.005em' }}
+            : 'rounded-[16px_16px_4px_16px] bg-accent-500 px-[18px] py-3.5 text-white',
+          'font-body text-[14px] leading-[1.65] tracking-[0.005em]'
+        )}
       >
         {content}
       </div>

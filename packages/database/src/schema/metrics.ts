@@ -7,6 +7,7 @@ import {
   jsonb,
   serial,
   unique,
+  index,
 } from 'drizzle-orm/pg-core';
 
 // ── Metric Definitions ─────────────────────────────────────────────────────────
@@ -25,6 +26,34 @@ export const metricDefinitions = pgTable('metric_definitions', {
   description: text('description'),
   sortOrder: integer('sort_order').default(0),
 });
+
+// ── Reference Ranges ──────────────────────────────────────────────────────────
+
+export const referenceRanges = pgTable(
+  'reference_ranges',
+  {
+    id: serial('id').primaryKey(),
+    metricCode: varchar('metric_code', { length: 50 })
+      .notNull()
+      .references(() => metricDefinitions.id),
+    sex: varchar('sex', { length: 10 }),
+    ageMin: integer('age_min'),
+    ageMax: integer('age_max'),
+    rangeLow: real('range_low'),
+    rangeHigh: real('range_high'),
+    rangeText: text('range_text'),
+    source: varchar('source', { length: 100 }),
+  },
+  (table) => [
+    unique('reference_ranges_metric_sex_age_uniq').on(
+      table.metricCode,
+      table.sex,
+      table.ageMin,
+      table.ageMax,
+    ),
+    index('reference_ranges_metric_code_idx').on(table.metricCode),
+  ],
+);
 
 // ── Unit Conversions ───────────────────────────────────────────────────────────
 

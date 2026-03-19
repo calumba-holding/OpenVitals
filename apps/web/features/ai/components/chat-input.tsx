@@ -65,8 +65,7 @@ export function ChatInput({
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             rows={1}
-            className="max-h-[200px] min-h-[26px] flex-1 resize-none bg-transparent text-[14px] text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus:shadow-none!"
-            style={{ fontFamily: 'var(--font-body)' }}
+            className="max-h-[200px] min-h-[26px] flex-1 resize-none bg-transparent text-[14px] text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus:shadow-none! font-body"
           />
           {isStreaming ? (
             <button type="button" onClick={onStop} className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-neutral-900 text-white transition-all hover:bg-neutral-800 active:scale-95">
@@ -83,7 +82,7 @@ export function ChatInput({
             </button>
           )}
         </div>
-        <p className="mt-2 text-center text-[10px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>
+        <p className="mt-2 text-center text-[10px] text-neutral-400 font-mono">
           AI responses are grounded in your health records. Not medical advice.
         </p>
       </div>

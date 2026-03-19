@@ -5,13 +5,13 @@ export function FeatureAiParsing() {
     <section className="border-t border-neutral-200/50">
       <div className="mx-auto grid max-w-[1120px] grid-cols-1 gap-10 px-6 py-20 md:grid-cols-[1fr_1.3fr] md:items-center md:gap-16">
         <div>
-          <h2 className="text-[24px] font-medium tracking-[-0.02em] text-neutral-900 leading-[1.25]" style={{ fontFamily: 'var(--font-display)' }}>
+          <h2 className="text-[24px] font-medium tracking-[-0.02em] text-neutral-900 leading-[1.25] font-display">
             Upload a PDF,<br />get structured data
           </h2>
-          <p className="mt-4 text-[14px] leading-[1.7] text-neutral-500" style={{ fontFamily: 'var(--font-body)' }}>
+          <p className="mt-4 text-[14px] leading-[1.7] text-neutral-500 font-body">
             Accelerate understanding by handing off messy lab reports to OpenVitals. AI classifies, extracts, and normalizes — you focus on the results.
           </p>
-          <Link href="/register" className="mt-4 inline-flex items-center gap-1 text-[13px] font-medium text-accent-600 hover:text-accent-700 transition-colors" style={{ fontFamily: 'var(--font-body)' }}>
+          <Link href="/register" className="mt-4 inline-flex items-center gap-1 text-[13px] font-medium text-accent-600 hover:text-accent-700 transition-colors font-body">
             Learn about ingestion →
           </Link>
         </div>
@@ -26,15 +26,15 @@ export function FeatureAiParsing() {
             ].map(r => (
               <div key={r.file} className="flex items-center justify-between rounded-lg border border-neutral-200/80 bg-white px-4 py-3" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                 <div>
-                  <div className="text-[12px] font-medium text-neutral-800" style={{ fontFamily: 'var(--font-body)' }}>{r.file}</div>
-                  <div className="mt-0.5 text-[10px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>{r.type}</div>
+                  <div className="text-[12px] font-medium text-neutral-800 font-body">{r.file}</div>
+                  <div className="mt-0.5 text-[10px] text-neutral-400 font-mono">{r.type}</div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] tabular-nums text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>{r.conf}</span>
+                  <span className="text-[10px] tabular-nums text-neutral-400 font-mono">{r.conf}</span>
                   <span className="inline-flex items-center gap-1 rounded-full px-2 py-[2px] text-[9px] font-medium" style={{ backgroundColor: r.bg, color: r.color, border: `1px solid ${r.border}` }}>
                     <span className="size-[5px] rounded-full" style={{ backgroundColor: r.color }} />{r.status}
                   </span>
-                  <span className="text-[11px] font-semibold text-accent-600 tabular-nums" style={{ fontFamily: 'var(--font-mono)' }}>{r.records}</span>
+                  <span className="text-[11px] font-semibold text-accent-600 tabular-nums font-mono">{r.records}</span>
                 </div>
               </div>
             ))}

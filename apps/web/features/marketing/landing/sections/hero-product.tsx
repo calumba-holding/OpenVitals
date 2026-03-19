@@ -9,7 +9,7 @@ export function HeroProduct() {
           backgroundImage: 'linear-gradient(135deg, #C9D6C3 0%, #D4C9A8 30%, #DDD5C0 60%, #C4CFC0 100%)',
         }}>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-[13px] text-neutral-400/60" style={{ fontFamily: 'var(--font-mono)' }}>landscape placeholder</span>
+            <span className="text-[13px] text-neutral-400/60 font-mono">landscape placeholder</span>
           </div>
         </div>
         {/* Floating UI panels on top */}

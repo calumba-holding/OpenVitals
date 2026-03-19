@@ -1,6 +1,19 @@
 import type { RawExtraction, NormalizedObservation, FlaggedExtraction, NormalizationResult } from './types';
 import { CONFIDENCE_THRESHOLD } from '@openvitals/common';
 
+export interface DemographicRange {
+  sex: string | null;
+  ageMin: number | null;
+  ageMax: number | null;
+  rangeLow: number | null;
+  rangeHigh: number | null;
+}
+
+export interface UserDemographics {
+  sex: string | null;
+  ageInYears: number | null;
+}
+
 export interface MetricDefinition {
   id: string;
   name: string;
@@ -9,6 +22,7 @@ export interface MetricDefinition {
   aliases: string[];
   referenceRangeLow: number | null;
   referenceRangeHigh: number | null;
+  demographicRanges?: DemographicRange[];
 }
 
 export interface UnitConversion {
@@ -76,11 +90,83 @@ export function convertUnit(
   return null;
 }
 
+/**
+ * Find the best matching demographic range for a given user.
+ * Scoring: sex-specific > any-sex, narrower age band > wider.
+ */
+function findBestDemographicRange(
+  ranges: DemographicRange[],
+  demographics: UserDemographics
+): DemographicRange | null {
+  let bestRange: DemographicRange | null = null;
+  let bestScore = -1;
+
+  for (const range of ranges) {
+    // Check age bounds
+    if (demographics.ageInYears !== null) {
+      if (range.ageMin !== null && demographics.ageInYears < range.ageMin) continue;
+      if (range.ageMax !== null && demographics.ageInYears > range.ageMax) continue;
+    }
+
+    // Check sex match
+    if (range.sex !== null && demographics.sex !== null && range.sex !== demographics.sex) continue;
+
+    // Score: sex-specific = +2, narrow age band = +1
+    let score = 0;
+    if (range.sex !== null && range.sex === demographics.sex) score += 2;
+    if (range.ageMin !== null || range.ageMax !== null) score += 1;
+    // Narrower band (both bounds set) gets extra point
+    if (range.ageMin !== null && range.ageMax !== null) score += 1;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestRange = range;
+    }
+  }
+
+  return bestRange;
+}
+
+/**
+ * Resolve reference range with priority:
+ * 1. Per-observation range from the extraction
+ * 2. Demographic-matched range from reference_ranges table
+ * 3. Metric definition fallback
+ */
+export function resolveReferenceRange(
+  extraction: RawExtraction,
+  metric: MetricDefinition,
+  demographics?: UserDemographics | null,
+): { low: number | null; high: number | null } {
+  // Priority 1: per-observation range
+  if (extraction.referenceRangeLow !== null || extraction.referenceRangeHigh !== null) {
+    return {
+      low: extraction.referenceRangeLow,
+      high: extraction.referenceRangeHigh,
+    };
+  }
+
+  // Priority 2: demographic match
+  if (demographics && metric.demographicRanges && metric.demographicRanges.length > 0) {
+    const match = findBestDemographicRange(metric.demographicRanges, demographics);
+    if (match) {
+      return { low: match.rangeLow, high: match.rangeHigh };
+    }
+  }
+
+  // Priority 3: metric definition fallback
+  return {
+    low: metric.referenceRangeLow,
+    high: metric.referenceRangeHigh,
+  };
+}
+
 export function normalizeExtractions(
   extractions: RawExtraction[],
   metricDefinitions: MetricDefinition[],
   unitConversions: UnitConversion[],
-  baseConfidence: number = 0.85
+  baseConfidence: number = 0.85,
+  demographics?: UserDemographics | null,
 ): NormalizationResult {
   const normalized: NormalizedObservation[] = [];
   const flagged: FlaggedExtraction[] = [];
@@ -122,9 +208,8 @@ export function normalizeExtractions(
       }
     }
 
-    // Determine abnormality
-    const refLow = extraction.referenceRangeLow ?? metric.referenceRangeLow;
-    const refHigh = extraction.referenceRangeHigh ?? metric.referenceRangeHigh;
+    // Determine abnormality using demographic-aware ranges
+    const { low: refLow, high: refHigh } = resolveReferenceRange(extraction, metric, demographics);
     const isAbnormal = extraction.isAbnormal ??
       (finalValue !== null && refLow !== null && refHigh !== null
         ? finalValue < refLow || finalValue > refHigh

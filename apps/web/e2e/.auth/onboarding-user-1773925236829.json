@@ -1,0 +1,15 @@
+{
+  "cookies": [
+    {
+      "name": "better-auth.session_token",
+      "value": "LzgOioC4azh6LJCG3BKk3nricN4dA4FP.eW%2FeAWeaE3fsz6xxuOrlmFmK2%2BAJFKtlPqWeJsqGWwE%3D",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1774530039.907003,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

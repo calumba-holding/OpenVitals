@@ -1,23 +1,29 @@
 import {
   pgTable,
-  uuid,
   varchar,
   text,
   boolean,
   timestamp,
+  date,
+  integer,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // ── Users ──────────────────────────────────────────────────────────────────────
 
 export const users = pgTable('users', {
-  id: uuid('id').primaryKey().defaultRandom(),
+  id: text('id').primaryKey(),
   email: varchar('email', { length: 255 }).unique().notNull(),
   name: varchar('name', { length: 255 }),
   emailVerified: boolean('email_verified').default(false),
   image: text('image'),
   timezone: varchar('timezone', { length: 50 }).default('UTC'),
   preferredUnits: varchar('preferred_units', { length: 20 }).default('metric'),
+  aiModel: varchar('ai_model', { length: 100 }).default('claude-sonnet-4-20250514'),
+  dateOfBirth: date('date_of_birth'),
+  biologicalSex: varchar('biological_sex', { length: 10 }),
+  bloodType: varchar('blood_type', { length: 5 }),
+  onboardingStep: integer('onboarding_step').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
@@ -26,7 +32,7 @@ export const users = pgTable('users', {
 
 export const sessions = pgTable('sessions', {
   id: text('id').primaryKey(),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   token: text('token').unique().notNull(),
@@ -41,7 +47,7 @@ export const sessions = pgTable('sessions', {
 
 export const accounts = pgTable('accounts', {
   id: text('id').primaryKey(),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   accountId: text('account_id').notNull(),

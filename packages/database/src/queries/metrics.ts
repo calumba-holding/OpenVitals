@@ -1,21 +1,28 @@
+import { eq, ilike, sql, or, isNull, and } from 'drizzle-orm';
+import { metricDefinitions, unitConversions } from '../schema/metrics';
 import type { Database } from '../client';
 
-// TODO: Implement alias matching that looks up a metric definition by its id,
-// name, or any entry in its aliases JSON array.
 export async function matchAlias(
   db: Database,
   params: {
     input: string;
   },
 ) {
-  // TODO: Query metricDefinitions where id matches, name ilike matches,
-  // or the aliases jsonb array contains the input string.
-  // Return the matched MetricDefinition or null.
-  return null;
+  const result = await db
+    .select()
+    .from(metricDefinitions)
+    .where(
+      or(
+        eq(metricDefinitions.id, params.input),
+        ilike(metricDefinitions.name, params.input),
+        sql`${metricDefinitions.aliases} @> ${JSON.stringify([params.input])}::jsonb`,
+      ),
+    )
+    .limit(1);
+
+  return result[0] ?? null;
 }
 
-// TODO: Implement unit conversion that looks up the conversion factor between
-// two units, optionally scoped to a specific metric code.
 export async function convertUnit(
   db: Database,
   params: {
@@ -25,9 +32,27 @@ export async function convertUnit(
     metricCode?: string;
   },
 ) {
-  // TODO: Look up unitConversions for the from/to pair, preferring a
-  // metric-specific conversion over a global one (metricCode IS NULL).
-  // Apply: result = value * multiplier + offset
-  // Return { convertedValue: number; conversionFound: boolean }.
-  return { convertedValue: params.value, conversionFound: false };
+  const rows = await db
+    .select()
+    .from(unitConversions)
+    .where(
+      and(
+        eq(unitConversions.fromUnit, params.fromUnit),
+        eq(unitConversions.toUnit, params.toUnit),
+      ),
+    );
+
+  // Prefer metric-specific conversion over global
+  const specific = rows.find((r) => r.metricCode === params.metricCode);
+  const global = rows.find((r) => r.metricCode === null);
+  const conversion = specific ?? global;
+
+  if (!conversion) {
+    return { convertedValue: params.value, conversionFound: false };
+  }
+
+  return {
+    convertedValue: params.value * conversion.multiplier + conversion.offset,
+    conversionFound: true,
+  };
 }

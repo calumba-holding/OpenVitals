@@ -19,7 +19,7 @@ export const observations = pgTable(
   'observations',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     metricCode: varchar('metric_code', { length: 50 }).notNull(),

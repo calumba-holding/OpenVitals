@@ -1,44 +1,94 @@
+'use client';
+
+import { trpc } from '@/lib/trpc/client';
+import { TitleActionHeader } from '@/components/title-action-header';
 import { MedicationCard } from '@/components/health/medication-card';
+import { AnimatedEmptyState } from '@/components/animated-empty-state';
+import { formatDate } from '@/lib/utils';
+import { Pill, Syringe, Tablets, Heart, ShieldCheck, Stethoscope } from 'lucide-react';
+
+const emptyIcons = [Pill, Syringe, Tablets, Heart, ShieldCheck, Stethoscope];
 
 export default function MedicationsPage() {
+  const { data, isLoading } = trpc.medications.list.useQuery({});
+  const items = data?.items ?? [];
+
+  if (isLoading) {
+    return (
+      <div>
+        <TitleActionHeader title="Medications" subtitle="Loading..." />
+        <div className="mt-7 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="h-36 animate-pulse rounded-xl border border-neutral-200 bg-neutral-50" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div>
+        <TitleActionHeader title="Medications" subtitle="Track your medications, supplements, and adherence." />
+        <div className="mt-7">
+          <AnimatedEmptyState
+            title="No medications tracked yet"
+            description="Add a medication to start tracking your prescriptions, supplements, and adherence."
+            cardIcon={({ index }) => emptyIcons[index % emptyIcons.length]!}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  const active = items.filter((m) => m.isActive);
+  const discontinued = items.filter((m) => !m.isActive);
+
   return (
     <div>
-      <div className="mb-7">
-        <h1
-          className="text-[26px] font-medium tracking-[-0.025em] text-neutral-900"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
-          Medications
-        </h1>
-        <p className="mt-1 text-sm text-neutral-500" style={{ fontFamily: 'var(--font-body)' }}>
-          Track your medications, supplements, and adherence.
-        </p>
-      </div>
+      <TitleActionHeader title="Medications" subtitle="Track your medications, supplements, and adherence." />
 
-      <div className="mb-6">
-        <h2
-          className="mb-4 text-lg font-medium tracking-[-0.015em] text-neutral-900"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
-          Active
-        </h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <MedicationCard name="Atorvastatin" dose="20mg" frequency="Once daily" indication="Cholesterol management" status="active" startDate="Jan 2025" />
-          <MedicationCard name="Vitamin D3" dose="5000 IU" frequency="Once daily" indication="Vitamin D deficiency" status="active" startDate="Mar 2026" />
+      {active.length > 0 && (
+        <div className="mt-7 mb-6">
+          <h2 className="mb-4 text-lg font-medium tracking-[-0.015em] text-neutral-900 font-display">
+            Active
+          </h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {active.map((med) => (
+              <MedicationCard
+                key={med.id}
+                name={med.name}
+                dose={med.dosage ?? '—'}
+                frequency={med.frequency ?? '—'}
+                indication={med.indication ?? '—'}
+                status="active"
+                startDate={med.startDate ? formatDate(med.startDate) : '—'}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      <div>
-        <h2
-          className="mb-4 text-lg font-medium tracking-[-0.015em] text-neutral-900"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
-          Discontinued
-        </h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <MedicationCard name="Metformin" dose="500mg" frequency="Twice daily" indication="Blood sugar management" status="discontinued" startDate="Jun 2024" />
+      {discontinued.length > 0 && (
+        <div className={active.length === 0 ? 'mt-7' : ''}>
+          <h2 className="mb-4 text-lg font-medium tracking-[-0.015em] text-neutral-900 font-display">
+            Discontinued
+          </h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {discontinued.map((med) => (
+              <MedicationCard
+                key={med.id}
+                name={med.name}
+                dose={med.dosage ?? '—'}
+                frequency={med.frequency ?? '—'}
+                indication={med.indication ?? '—'}
+                status="discontinued"
+                startDate={med.startDate ? formatDate(med.startDate) : '—'}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

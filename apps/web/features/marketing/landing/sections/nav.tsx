@@ -40,8 +40,7 @@ export function Nav() {
             <Link href="/" className="flex items-center gap-2">
               <Logo className="size-6 text-accent-600 animate-spin-yoyo" />
               <span
-                className="text-[16px] font-semibold text-neutral-900"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-[16px] font-semibold text-neutral-900 font-display"
               >
                 OpenVitals
               </span>
@@ -50,8 +49,7 @@ export function Nav() {
               {navLinks.map((l) => (
                 <span
                   key={l}
-                  className="text-[13px] text-neutral-500 hover:text-neutral-800 cursor-pointer transition-colors"
-                  style={{ fontFamily: "var(--font-body)" }}
+                  className="text-[13px] text-neutral-500 hover:text-neutral-800 cursor-pointer transition-colors font-body"
                 >
                   {l}
                 </span>
@@ -63,15 +61,13 @@ export function Nav() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="hidden sm:block text-[13px] text-neutral-600 hover:text-neutral-900 transition-colors"
-              style={{ fontFamily: "var(--font-body)" }}
+              className="hidden sm:block text-[13px] text-neutral-600 hover:text-neutral-900 transition-colors font-body"
             >
               Sign in
             </Link>
             <Link
               href="/register"
-              className="rounded-md bg-neutral-900 px-3 py-1.5 text-[12px] font-medium text-white hover:bg-neutral-800 transition-colors"
-              style={{ fontFamily: "var(--font-body)" }}
+              className="rounded-md bg-neutral-900 px-3 py-1.5 text-[12px] font-medium text-white hover:bg-neutral-800 transition-colors font-body"
             >
               Get started
             </Link>
@@ -151,8 +147,7 @@ export function Nav() {
               }}
             >
               <span
-                className="block cursor-pointer border-b border-neutral-200/60 py-4 text-[24px] font-medium tracking-[-0.01em] text-neutral-900 transition-colors hover:text-neutral-500"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="block cursor-pointer border-b border-neutral-200/60 py-4 text-[24px] font-medium tracking-[-0.01em] text-neutral-900 transition-colors hover:text-neutral-500 font-display"
                 onClick={close}
               >
                 {label}
@@ -174,16 +169,14 @@ export function Nav() {
         >
           <Link
             href="/register"
-            className="rounded-md bg-neutral-900 px-5 py-2.5 text-[14px] font-medium text-white hover:bg-neutral-800 transition-colors"
-            style={{ fontFamily: "var(--font-body)" }}
+            className="rounded-md bg-neutral-900 px-5 py-2.5 text-[14px] font-medium text-white hover:bg-neutral-800 transition-colors font-body"
             onClick={close}
           >
             Get started
           </Link>
           <Link
             href="/login"
-            className="text-[14px] text-neutral-500 hover:text-neutral-900 transition-colors"
-            style={{ fontFamily: "var(--font-body)" }}
+            className="text-[14px] text-neutral-500 hover:text-neutral-900 transition-colors font-body"
             onClick={close}
           >
             Sign in

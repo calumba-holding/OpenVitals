@@ -1,7 +1,7 @@
+import { and, eq, isNull, gt, sql } from 'drizzle-orm';
+import { accessGrants, sharePolicies } from '../schema/sharing';
 import type { Database } from '../client';
 
-// TODO: Implement access check that verifies whether a given access grant token
-// has permission to view a specific data category for the policy owner.
 export async function checkCategoryAccess(
   db: Database,
   params: {
@@ -9,21 +9,46 @@ export async function checkCategoryAccess(
     category: string;
   },
 ) {
-  // TODO: Look up the access grant by token, verify it is active and not expired,
-  // then check if the linked share policy's categories array includes the
-  // requested category. Return { allowed: boolean; userId: string | null }.
-  return { allowed: false, userId: null as string | null };
+  const grant = await db
+    .select({
+      sharePolicyId: accessGrants.sharePolicyId,
+      isActive: accessGrants.isActive,
+      policyUserId: sharePolicies.userId,
+      categories: sharePolicies.categories,
+      expiresAt: sharePolicies.expiresAt,
+      policyIsActive: sharePolicies.isActive,
+    })
+    .from(accessGrants)
+    .innerJoin(sharePolicies, eq(accessGrants.sharePolicyId, sharePolicies.id))
+    .where(eq(accessGrants.token, params.token))
+    .limit(1);
+
+  if (!grant.length) return { allowed: false, userId: null as string | null };
+
+  const row = grant[0]!;
+  if (!row.isActive || !row.policyIsActive) return { allowed: false, userId: null as string | null };
+  if (row.expiresAt && row.expiresAt < new Date()) return { allowed: false, userId: null as string | null };
+
+  const categories = row.categories as string[];
+  if (!categories.includes(params.category)) return { allowed: false, userId: null as string | null };
+
+  return { allowed: true, userId: row.policyUserId };
 }
 
-// TODO: Implement query to list all active access grants for a user's share policies,
-// including recipient details and last access timestamps.
 export async function getActiveGrants(
   db: Database,
   params: {
     userId: string;
   },
 ) {
-  // TODO: Join sharePolicies with accessGrants, filter by userId and isActive,
-  // order by createdAt desc
-  return [];
+  return db.query.sharePolicies.findMany({
+    where: and(
+      eq(sharePolicies.userId, params.userId),
+      eq(sharePolicies.isActive, true),
+    ),
+    with: {
+      accessGrants: true,
+    },
+    orderBy: (policies, { desc }) => [desc(policies.createdAt)],
+  });
 }

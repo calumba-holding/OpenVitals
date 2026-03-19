@@ -15,7 +15,7 @@ import { users } from './users';
 
 export const insights = pgTable('insights', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   type: varchar('type', { length: 20 }).notNull(),

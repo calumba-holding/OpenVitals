@@ -6,6 +6,7 @@ import { httpBatchLink } from '@trpc/client';
 import superjson from 'superjson';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { Toaster } from '@/components/ui/sonner';
+import { ModalProvider } from '@/components/modal/provider';
 import { trpc } from '@/lib/trpc/client';
 
 function getBaseUrl() {
@@ -41,8 +42,10 @@ export function Providers({ children }: { children: ReactNode }) {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <TooltipPrimitive.Provider delayDuration={150}>
-          {children}
-          <Toaster position="bottom-right" />
+          <ModalProvider>
+            {children}
+            <Toaster position="bottom-right" />
+          </ModalProvider>
         </TooltipPrimitive.Provider>
       </QueryClientProvider>
     </trpc.Provider>

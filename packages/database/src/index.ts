@@ -12,3 +12,15 @@ export {
 } from './queries/observations';
 export { checkCategoryAccess, getActiveGrants } from './queries/sharing';
 export { matchAlias, convertUnit } from './queries/metrics';
+export {
+  listMedications,
+  createMedication,
+  updateMedication,
+  logMedicationAdherence,
+} from './queries/medications';
+export {
+  createImportJob,
+  getImportJobStatus,
+  listImportJobs,
+  getReviewQueue,
+} from './queries/importJobs';

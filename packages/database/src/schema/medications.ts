@@ -16,7 +16,7 @@ import { sourceArtifacts, importJobs } from './sources';
 
 export const medications = pgTable('medications', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   name: varchar('name', { length: 255 }).notNull(),
@@ -48,7 +48,7 @@ export const medicationLogs = pgTable('medication_logs', {
   medicationId: uuid('medication_id')
     .notNull()
     .references(() => medications.id, { onDelete: 'cascade' }),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   logDate: date('log_date').notNull(),

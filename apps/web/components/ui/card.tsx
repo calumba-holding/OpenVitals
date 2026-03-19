@@ -31,7 +31,6 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
         'text-[14px] font-semibold leading-none tracking-tight text-neutral-900',
         className
       )}
-      style={{ fontFamily: 'var(--font-display)' }}
       {...props}
     />
   )

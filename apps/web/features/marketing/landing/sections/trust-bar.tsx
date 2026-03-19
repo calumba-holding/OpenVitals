@@ -23,8 +23,7 @@ export function TrustBar() {
     <section className="pb-10 pt-0">
       <div className="mx-auto max-w-280 px-6 text-center">
         <h2
-          className="mb-6 text-[14px] text-neutral-500"
-          style={{ fontFamily: "var(--font-body)" }}
+          className="mb-6 text-[14px] text-neutral-500 font-body"
         >
           Parses lab reports from the most common providers
         </h2>

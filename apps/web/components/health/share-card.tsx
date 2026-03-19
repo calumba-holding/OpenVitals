@@ -14,10 +14,10 @@ export function ShareCard({ name, recipient, categories, accessLevel, expiresIn,
     <div className="rounded-xl border border-neutral-200 bg-white p-5">
       <div className="mb-3.5 flex items-start justify-between">
         <div>
-          <div className="text-[15px] font-semibold text-neutral-900" style={{ fontFamily: 'var(--font-body)' }}>
+          <div className="text-[15px] font-semibold text-neutral-900 font-body">
             {name}
           </div>
-          <div className="mt-0.5 text-[13px] text-neutral-500" style={{ fontFamily: 'var(--font-body)' }}>
+          <div className="mt-0.5 text-[13px] text-neutral-500 font-body">
             {recipient}
           </div>
         </div>
@@ -27,14 +27,13 @@ export function ShareCard({ name, recipient, categories, accessLevel, expiresIn,
         {categories.map((c) => (
           <span
             key={c}
-            className="rounded-md bg-accent-50 px-2 py-0.5 text-[11px] font-medium text-accent-700"
-            style={{ fontFamily: 'var(--font-mono)' }}
+            className="rounded-md bg-accent-50 px-2 py-0.5 text-[11px] font-medium text-accent-700 font-mono"
           >
             {c}
           </span>
         ))}
       </div>
-      <div className="flex justify-between text-[11px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>
+      <div className="flex justify-between text-[11px] text-neutral-400 font-mono">
         <span>Expires {expiresIn}</span>
         <span>Last accessed {lastAccessed}</span>
       </div>

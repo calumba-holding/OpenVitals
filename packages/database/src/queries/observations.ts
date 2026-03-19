@@ -1,7 +1,7 @@
+import { and, asc, desc, eq, gte, lte, type SQL } from 'drizzle-orm';
+import { observations } from '../schema/observations';
 import type { Database } from '../client';
 
-// TODO: Implement observation list query with filtering by category, metric code,
-// date range, status, and pagination support.
 export async function listObservations(
   db: Database,
   params: {
@@ -15,12 +15,22 @@ export async function listObservations(
     offset?: number;
   },
 ) {
-  // TODO: Build query with dynamic where clauses and ordering by observedAt desc
-  return [];
+  const conditions: SQL[] = [eq(observations.userId, params.userId)];
+  if (params.category) conditions.push(eq(observations.category, params.category));
+  if (params.metricCode) conditions.push(eq(observations.metricCode, params.metricCode));
+  if (params.dateFrom) conditions.push(gte(observations.observedAt, params.dateFrom));
+  if (params.dateTo) conditions.push(lte(observations.observedAt, params.dateTo));
+  if (params.status) conditions.push(eq(observations.status, params.status));
+
+  return db
+    .select()
+    .from(observations)
+    .where(and(...conditions))
+    .orderBy(desc(observations.observedAt))
+    .limit(params.limit ?? 50)
+    .offset(params.offset ?? 0);
 }
 
-// TODO: Implement trend query that returns observations for a specific metric
-// over a date range, suitable for charting.
 export async function getObservationTrend(
   db: Database,
   params: {
@@ -31,12 +41,21 @@ export async function getObservationTrend(
     limit?: number;
   },
 ) {
-  // TODO: Query observations filtered by userId + metricCode, ordered by observedAt asc
-  return [];
+  const conditions: SQL[] = [
+    eq(observations.userId, params.userId),
+    eq(observations.metricCode, params.metricCode),
+  ];
+  if (params.dateFrom) conditions.push(gte(observations.observedAt, params.dateFrom));
+  if (params.dateTo) conditions.push(lte(observations.observedAt, params.dateTo));
+
+  return db
+    .select()
+    .from(observations)
+    .where(and(...conditions))
+    .orderBy(asc(observations.observedAt))
+    .limit(params.limit ?? 200);
 }
 
-// TODO: Implement provenance query that returns a single observation along with
-// its linked source artifact, import job, and data source for full traceability.
 export async function getObservationWithProvenance(
   db: Database,
   params: {
@@ -44,7 +63,15 @@ export async function getObservationWithProvenance(
     userId: string;
   },
 ) {
-  // TODO: Use Drizzle relational query with `with` to eagerly load
-  // dataSource, sourceArtifact, and importJob relations
-  return null;
+  return db.query.observations.findFirst({
+    where: and(
+      eq(observations.id, params.observationId),
+      eq(observations.userId, params.userId),
+    ),
+    with: {
+      dataSource: true,
+      sourceArtifact: true,
+      importJob: true,
+    },
+  });
 }

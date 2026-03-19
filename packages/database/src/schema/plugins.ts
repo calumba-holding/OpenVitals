@@ -29,7 +29,7 @@ export const plugins = pgTable('plugins', {
 
 export const pluginInstallations = pgTable('plugin_installations', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   pluginId: varchar('plugin_id', { length: 100 })

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Logo } from '@/assets/app/images/logo';
 
 export default function AuthLayout({
   children,
@@ -19,13 +20,9 @@ export default function AuthLayout({
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex size-9 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M12 3C7.5 3 4 6 4 9.5c0 2.5 1.5 4.5 3.5 5.5L6 21l3-2 3 2 3-2 3 2-1.5-6c2-1 3.5-3 3.5-5.5C21 6 17.5 3 12 3z" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M9 10h.01M15 10h.01" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M9.5 13.5c.8.8 2.2 1 3 .5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
+              <Logo className="size-5 text-white" />
             </div>
-            <span className="text-[18px] font-semibold text-white tracking-[-0.01em]" style={{ fontFamily: 'var(--font-display)' }}>
+            <span className="text-[18px] font-semibold text-white tracking-[-0.01em] font-display">
               OpenVitals
             </span>
           </Link>
@@ -33,7 +30,7 @@ export default function AuthLayout({
 
         {/* Central content */}
         <div className="relative z-10 space-y-8">
-          <h2 className="text-[32px] font-medium leading-[1.15] tracking-[-0.03em] text-white" style={{ fontFamily: 'var(--font-display)' }}>
+          <h2 className="text-[32px] font-medium leading-[1.15] tracking-[-0.03em] text-white font-display">
             Your health data,<br />traced to the source.
           </h2>
 
@@ -45,14 +42,14 @@ export default function AuthLayout({
               { metric: 'Ferritin', value: '14', unit: 'ng/mL', status: 'Low' },
             ].map((row) => (
               <div key={row.metric} className="flex items-center justify-between rounded-lg bg-white/10 backdrop-blur-sm px-4 py-3">
-                <span className="text-[13px] font-medium text-white/80" style={{ fontFamily: 'var(--font-body)' }}>
+                <span className="text-[13px] font-medium text-white/80 font-body">
                   {row.metric}
                 </span>
                 <div className="flex items-center gap-3">
-                  <span className="text-[14px] font-semibold text-white tabular-nums" style={{ fontFamily: 'var(--font-mono)' }}>
+                  <span className="text-[14px] font-semibold text-white tabular-nums font-mono">
                     {row.value}
                   </span>
-                  <span className="text-[10px] text-white/50" style={{ fontFamily: 'var(--font-mono)' }}>
+                  <span className="text-[10px] text-white/50 font-mono">
                     {row.unit}
                   </span>
                 </div>
@@ -67,8 +64,7 @@ export default function AuthLayout({
             {['◎ Quest Diagnostics', '⚙ lab-pdf-parser v2.1', '◉ 0.94'].map((pill) => (
               <span
                 key={pill}
-                className="rounded-md bg-white/10 px-2 py-1 text-[10px] text-white/60"
-                style={{ fontFamily: 'var(--font-mono)' }}
+                className="rounded-md bg-white/10 px-2 py-1 text-[10px] text-white/60 font-mono"
               >
                 {pill}
               </span>

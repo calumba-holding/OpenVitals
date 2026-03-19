@@ -1,4 +1,4 @@
-import { put, del, head } from '@vercel/blob';
+import { put, del, head, getDownloadUrl } from '@vercel/blob';
 import type { BlobStorageProvider } from './interface';
 
 export class VercelBlobAdapter implements BlobStorageProvider {
@@ -9,7 +9,7 @@ export class VercelBlobAdapter implements BlobStorageProvider {
     metadata?: Record<string, string>;
   }): Promise<{ url: string; path: string }> {
     const blob = await put(params.path, params.data, {
-      access: 'public',
+      access: 'private',
       contentType: params.contentType,
       addRandomSuffix: false,
     });
@@ -24,9 +24,13 @@ export class VercelBlobAdapter implements BlobStorageProvider {
   }> {
     const blobMeta = await head(path);
 
-    const response = await fetch(blobMeta.url);
+    // For private blobs, fetch with the read-write token
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    const response = await fetch(blobMeta.url, {
+      headers: token ? { authorization: `Bearer ${token}` } : {},
+    });
     if (!response.ok || !response.body) {
-      throw new Error(`Failed to download blob at path: ${path}`);
+      throw new Error(`Failed to download blob (status ${response.status}): ${path}`);
     }
 
     return {

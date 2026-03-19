@@ -21,7 +21,7 @@ export function PlaceholderImage({ label, aspect = '16/10', className = '' }: { 
       style={{ aspectRatio: aspect }}
     >
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-[13px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>{label}</span>
+        <span className="text-[13px] text-neutral-400 font-mono">{label}</span>
       </div>
       {/* Subtle scanline texture */}
       <div className="absolute inset-0 opacity-[0.03]" style={{
@@ -51,7 +51,7 @@ export function HeroMockup() {
       <div className="flex items-center gap-2 border-b border-neutral-100 px-4 py-2.5">
         <div className="flex gap-1.5"><div className="size-[9px] rounded-full bg-[#FF5F57]" /><div className="size-[9px] rounded-full bg-[#FEBC2E]" /><div className="size-[9px] rounded-full bg-[#28C840]" /></div>
         <div className="ml-2 flex-1 rounded bg-neutral-100 px-3 py-[3px]">
-          <span className="text-[10px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>openvitals.dev/labs</span>
+          <span className="text-[10px] text-neutral-400 font-mono">openvitals.dev/labs</span>
         </div>
       </div>
       {/* Summary row */}
@@ -63,13 +63,13 @@ export function HeroMockup() {
           { label: 'Vitamin D', val: '22', unit: 'ng/mL', delta: '↓ 6', color: '#DC2626', d: [42, 35, 28, 22] },
         ].map(c => (
           <div key={c.label} className="rounded-lg border border-neutral-200/80 p-2.5">
-            <div className="text-[9px] text-neutral-400" style={{ fontFamily: 'var(--font-body)' }}>{c.label}</div>
+            <div className="text-[9px] text-neutral-400 font-body">{c.label}</div>
             <div className="mt-1 flex items-baseline gap-1">
-              <span className="text-[18px] font-medium tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>{c.val}</span>
-              <span className="text-[8px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>{c.unit}</span>
+              <span className="text-[18px] font-medium tracking-tight font-display">{c.val}</span>
+              <span className="text-[8px] text-neutral-400 font-mono">{c.unit}</span>
             </div>
             <div className="mt-1.5 flex items-end justify-between">
-              <span className="text-[8px] font-medium" style={{ fontFamily: 'var(--font-mono)', color: c.color }}>{c.delta}</span>
+              <span className="text-[8px] font-medium font-mono" style={{ color: c.color }}>{c.delta}</span>
               <Spark data={c.d} color={c.color} w={44} h={14} />
             </div>
           </div>
@@ -78,17 +78,17 @@ export function HeroMockup() {
       {/* Table */}
       <div className="grid grid-cols-[1.6fr_0.9fr_1fr_0.7fr_0.8fr] gap-2 border-t border-b border-neutral-100 bg-neutral-50/80 px-4 py-1.5">
         {['Metric', 'Value', 'Reference', 'Status', 'Trend'].map(h => (
-          <div key={h} className="text-[8px] font-semibold uppercase tracking-[0.06em] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>{h}</div>
+          <div key={h} className="text-[8px] font-semibold uppercase tracking-[0.06em] text-neutral-400 font-mono">{h}</div>
         ))}
       </div>
       {rows.map((r, i) => (
         <div key={r.metric} className={`grid grid-cols-[1.6fr_0.9fr_1fr_0.7fr_0.8fr] items-center gap-2 px-4 py-2 ${i < rows.length - 1 ? 'border-b border-neutral-100/80' : ''}`}>
-          <div className="text-[10px] font-medium text-neutral-800" style={{ fontFamily: 'var(--font-body)' }}>{r.metric}</div>
+          <div className="text-[10px] font-medium text-neutral-800 font-body">{r.metric}</div>
           <div className="flex items-baseline gap-0.5">
-            <span className="text-[11px] font-semibold tabular-nums" style={{ fontFamily: 'var(--font-mono)', color: r.st === 'normal' ? '#141414' : sc[r.st] }}>{r.val}</span>
-            <span className="text-[8px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>{r.unit}</span>
+            <span className="text-[11px] font-semibold tabular-nums font-mono" style={{ color: r.st === 'normal' ? '#141414' : sc[r.st] }}>{r.val}</span>
+            <span className="text-[8px] text-neutral-400 font-mono">{r.unit}</span>
           </div>
-          <div className="text-[9px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>{r.range}</div>
+          <div className="text-[9px] text-neutral-400 font-mono">{r.range}</div>
           <span className="inline-flex w-fit items-center gap-[3px] rounded-full px-1.5 py-[2px] text-[8px] font-medium" style={{ backgroundColor: sb[r.st], color: sc[r.st], border: `1px solid ${sbo[r.st]}` }}>
             <span className="size-[5px] rounded-full" style={{ backgroundColor: sc[r.st] }} />{sl[r.st]}
           </span>

@@ -51,10 +51,10 @@ export function InsightPanel({ insight, onClose }: InsightPanelProps) {
                 <path d="M9 17H7A5 5 0 017 7h2M15 7h2a5 5 0 010 10h-2M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </div>
-            <p className="text-[13px] text-neutral-500" style={{ fontFamily: 'var(--font-body)' }}>
+            <p className="text-[13px] text-neutral-500 font-body">
               Health insights will appear here
             </p>
-            <p className="mt-1 text-[11px] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>
+            <p className="mt-1 text-[11px] text-neutral-400 font-mono">
               Ask a question to generate an analysis
             </p>
           </div>
@@ -96,7 +96,7 @@ export function InsightPanel({ insight, onClose }: InsightPanelProps) {
           <div className="space-y-6 p-6">
             {insight.data?.metrics && insight.data.metrics.length > 0 && (
               <div>
-                <h3 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>
+                <h3 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-neutral-400 font-mono">
                   Key Metrics
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
@@ -109,7 +109,7 @@ export function InsightPanel({ insight, onClose }: InsightPanelProps) {
 
             {insight.data?.labResults && insight.data.labResults.length > 0 && (
               <div>
-                <h3 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>
+                <h3 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-neutral-400 font-mono">
                   Results
                 </h3>
                 <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
@@ -123,10 +123,10 @@ export function InsightPanel({ insight, onClose }: InsightPanelProps) {
 
             {insight.data?.summary && (
               <div>
-                <h3 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-neutral-400" style={{ fontFamily: 'var(--font-mono)' }}>
+                <h3 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-neutral-400 font-mono">
                   Analysis
                 </h3>
-                <div className="rounded-xl border border-neutral-200 bg-white p-5 text-[14px] leading-[1.7] text-neutral-700" style={{ fontFamily: 'var(--font-body)' }}>
+                <div className="rounded-xl border border-neutral-200 bg-white p-5 text-[14px] leading-[1.7] text-neutral-700 font-body">
                   {insight.data.summary}
                 </div>
               </div>

@@ -15,7 +15,7 @@ export const auditEvents = pgTable(
   'audit_events',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id').references(() => users.id),
+    userId: text('user_id').references(() => users.id),
     actorId: uuid('actor_id'),
     eventType: varchar('event_type', { length: 100 }).notNull(),
     resourceType: varchar('resource_type', { length: 50 }),

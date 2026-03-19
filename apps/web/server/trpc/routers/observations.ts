@@ -1,5 +1,8 @@
 import { z } from 'zod';
+import { TRPCError } from '@trpc/server';
+import { eq, and } from 'drizzle-orm';
 import { createRouter, protectedProcedure } from '../init';
+import { listObservations, getObservationTrend, getObservationWithProvenance, observations } from '@openvitals/database';
 
 export const observationsRouter = createRouter({
   list: protectedProcedure
@@ -13,8 +16,25 @@ export const observationsRouter = createRouter({
       cursor: z.string().optional(),
     }))
     .query(async ({ ctx, input }) => {
-      // TODO: Implement with observationQueries.list
-      return { items: [], nextCursor: null };
+      const offset = input.cursor ? parseInt(input.cursor, 10) : 0;
+      const items = await listObservations(ctx.db, {
+        userId: ctx.userId,
+        category: input.category,
+        metricCode: input.metricCode,
+        dateFrom: input.dateFrom,
+        dateTo: input.dateTo,
+        status: input.status,
+        limit: input.limit + 1,
+        offset,
+      });
+
+      let nextCursor: string | null = null;
+      if (items.length > input.limit) {
+        items.pop();
+        nextCursor = String(offset + input.limit);
+      }
+
+      return { items, nextCursor };
     }),
 
   trend: protectedProcedure
@@ -25,15 +45,30 @@ export const observationsRouter = createRouter({
       granularity: z.enum(['raw', 'daily', 'weekly', 'monthly']).default('raw'),
     }))
     .query(async ({ ctx, input }) => {
-      // TODO: Implement with observationQueries.trend
-      return { dataPoints: [] };
+      const rows = await getObservationTrend(ctx.db, {
+        userId: ctx.userId,
+        metricCode: input.metricCode,
+        dateFrom: input.dateFrom,
+        dateTo: input.dateTo,
+      });
+
+      const dataPoints = rows.map((r) => ({
+        date: r.observedAt,
+        value: r.valueNumeric,
+        unit: r.unit,
+      }));
+
+      return { dataPoints };
     }),
 
   getWithProvenance: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      // TODO: Implement with observationQueries.getWithProvenance
-      return null;
+      const result = await getObservationWithProvenance(ctx.db, {
+        observationId: input.id,
+        userId: ctx.userId,
+      });
+      return result ?? null;
     }),
 
   correct: protectedProcedure
@@ -46,14 +81,51 @@ export const observationsRouter = createRouter({
       correctionNote: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      // TODO: Implement observation correction
+      const { id, ...corrections } = input;
+
+      // Read current row
+      const [current] = await ctx.db
+        .select()
+        .from(observations)
+        .where(and(eq(observations.id, id), eq(observations.userId, ctx.userId)))
+        .limit(1);
+
+      if (!current) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Observation not found' });
+      }
+
+      await ctx.db
+        .update(observations)
+        .set({
+          ...(corrections.valueNumeric !== undefined && { valueNumeric: corrections.valueNumeric }),
+          ...(corrections.valueText !== undefined && { valueText: corrections.valueText }),
+          ...(corrections.metricCode !== undefined && { metricCode: corrections.metricCode }),
+          ...(corrections.unit !== undefined && { unit: corrections.unit }),
+          originalValueNumeric: current.originalValueNumeric ?? current.valueNumeric,
+          originalValueText: current.originalValueText ?? current.valueText,
+          originalUnit: current.originalUnit ?? current.unit,
+          correctionNote: corrections.correctionNote,
+          status: 'corrected',
+          updatedAt: new Date(),
+        })
+        .where(and(eq(observations.id, id), eq(observations.userId, ctx.userId)));
+
       return { success: true };
     }),
 
   confirm: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      // TODO: Implement observation confirmation
+      const result = await ctx.db
+        .update(observations)
+        .set({ status: 'confirmed', updatedAt: new Date() })
+        .where(and(eq(observations.id, input.id), eq(observations.userId, ctx.userId)))
+        .returning();
+
+      if (!result.length) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Observation not found' });
+      }
+
       return { success: true };
     }),
 });
