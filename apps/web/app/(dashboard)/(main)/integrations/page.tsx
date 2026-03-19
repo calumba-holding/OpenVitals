@@ -416,11 +416,18 @@ export default function IntegrationsPage() {
     );
   }
 
-  const filtered = integrationCatalog.filter((i) => {
-    if (activeTab === "all") return true;
-    if (activeTab === "connected") return connectionMap.has(i.id);
-    return i.category === activeTab;
-  });
+  const filtered = integrationCatalog
+    .filter((i) => {
+      if (activeTab === "all") return true;
+      if (activeTab === "connected") return connectionMap.has(i.id);
+      return i.category === activeTab;
+    })
+    .sort((a, b) => {
+      const aAvailable = connectionMap.has(a.id) || implementedProviders.has(a.id);
+      const bAvailable = connectionMap.has(b.id) || implementedProviders.has(b.id);
+      if (aAvailable === bAvailable) return 0;
+      return aAvailable ? -1 : 1;
+    });
 
   return (
     <div>
