@@ -8,7 +8,7 @@ import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { Toaster } from '@/components/ui/sonner';
 import { ModalProvider } from '@/components/modal/provider';
 import { trpc } from '@/lib/trpc/client';
-
+import { Analytics } from "@vercel/analytics/next"
 function getBaseUrl() {
   if (typeof window !== 'undefined') return '';
   return process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
@@ -45,6 +45,7 @@ export function Providers({ children }: { children: ReactNode }) {
           <ModalProvider>
             {children}
             <Toaster position="bottom-right" />
+            <Analytics />
           </ModalProvider>
         </TooltipPrimitive.Provider>
       </QueryClientProvider>
