@@ -3,27 +3,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image, { type StaticImageData } from "next/image";
 import {
-  Watch,
-  Activity,
-  CircleGauge,
-  CircleDot,
-  Zap,
-  Heart,
-  Smartphone,
-  SquareActivity,
-  TestTubes,
-  FlaskConical,
-  FileHeart,
-  Hospital,
   Settings as SettingsIcon,
   RefreshCw,
   Unplug,
   Loader2,
-  type LucideIcon,
 } from "lucide-react";
 import { TitleActionHeader } from "@/components/title-action-header";
+import { Avatar } from "@/components/avatar";
 import { cn, getRelativeTime } from "@/lib/utils";
 import { trpc } from "@/lib/trpc/client";
 import { toast } from "sonner";
@@ -52,19 +39,9 @@ interface IntegrationDef {
   name: string;
   description: string;
   category: Category;
-  icon: LucideIcon;
-  brandIcon?: StaticImageData;
-  color: string;
-  iconBg: string;
+  brandIconSrc?: string;
   dataTypes: string[];
 }
-
-const categoryLabels: Record<Category, string> = {
-  wearables: "Wearables",
-  health_platforms: "Health Platforms",
-  lab_services: "Lab Services",
-  medical_records: "Medical Records",
-};
 
 const tabs: { key: FilterTab; label: string }[] = [
   { key: "all", label: "All" },
@@ -85,58 +62,39 @@ const integrationCatalog: IntegrationDef[] = [
     description:
       "Heart rate, activity, sleep, and ECG data from your Apple Watch",
     category: "wearables",
-    icon: Watch,
-    brandIcon: appleIcon,
-    color: "text-rose-600",
-    iconBg: "bg-rose-50",
+    brandIconSrc: appleIcon.src,
     dataTypes: ["Heart Rate", "Steps", "Sleep", "ECG"],
   },
   {
     id: "fitbit",
     name: "Fitbit",
-    description:
-      "Activity tracking, sleep analysis, and heart rate monitoring",
+    description: "Activity tracking, sleep analysis, and heart rate monitoring",
     category: "wearables",
-    icon: Activity,
-    brandIcon: fitbitIcon,
-    color: "text-teal-600",
-    iconBg: "bg-teal-50",
+    brandIconSrc: fitbitIcon.src,
     dataTypes: ["Steps", "Sleep", "Heart Rate", "SpO2"],
   },
   {
     id: "garmin",
     name: "Garmin",
-    description:
-      "GPS tracking, performance metrics, and health monitoring",
+    description: "GPS tracking, performance metrics, and health monitoring",
     category: "wearables",
-    icon: CircleGauge,
-    brandIcon: garminIcon,
-    color: "text-sky-600",
-    iconBg: "bg-sky-50",
+    brandIconSrc: garminIcon.src,
     dataTypes: ["GPS", "Heart Rate", "VO2 Max", "Steps"],
   },
   {
     id: "oura-ring",
     name: "Oura Ring",
-    description:
-      "Sleep tracking, readiness scores, and temperature trends",
+    description: "Sleep tracking, readiness scores, and temperature trends",
     category: "wearables",
-    icon: CircleDot,
-    brandIcon: ouraIcon,
-    color: "text-violet-600",
-    iconBg: "bg-violet-50",
+    brandIconSrc: ouraIcon.src,
     dataTypes: ["Sleep", "HRV", "Temperature", "Readiness"],
   },
   {
     id: "whoop",
     name: "Whoop",
-    description:
-      "Strain tracking, recovery analysis, and sleep performance",
+    description: "Strain tracking, recovery analysis, and sleep performance",
     category: "wearables",
-    icon: Zap,
-    brandIcon: whoopIcon,
-    color: "text-amber-600",
-    iconBg: "bg-amber-50",
+    brandIconSrc: whoopIcon.src,
     dataTypes: ["Strain", "Recovery", "Sleep", "HRV"],
   },
   {
@@ -145,22 +103,15 @@ const integrationCatalog: IntegrationDef[] = [
     description:
       "Health monitoring, body composition, and blood pressure tracking",
     category: "wearables",
-    icon: Watch,
-    brandIcon: samsungIcon,
-    color: "text-indigo-600",
-    iconBg: "bg-indigo-50",
+    brandIconSrc: samsungIcon.src,
     dataTypes: ["Heart Rate", "Steps", "Body Comp", "BP"],
   },
   {
     id: "apple-health",
     name: "Apple Health",
-    description:
-      "Centralized health data from all your Apple devices and apps",
+    description: "Centralized health data from all your Apple devices and apps",
     category: "health_platforms",
-    icon: Heart,
-    brandIcon: appleIcon,
-    color: "text-pink-600",
-    iconBg: "bg-pink-50",
+    brandIconSrc: appleIcon.src,
     dataTypes: ["Vitals", "Activity", "Nutrition", "Sleep"],
   },
   {
@@ -168,33 +119,22 @@ const integrationCatalog: IntegrationDef[] = [
     name: "Google Health Connect",
     description: "Unified health data from Android apps and devices",
     category: "health_platforms",
-    icon: Smartphone,
-    color: "text-emerald-600",
-    iconBg: "bg-emerald-50",
     dataTypes: ["Activity", "Vitals", "Sleep", "Nutrition"],
   },
   {
     id: "samsung-health",
     name: "Samsung Health",
-    description:
-      "Health and fitness data from Samsung ecosystem devices",
+    description: "Health and fitness data from Samsung ecosystem devices",
     category: "health_platforms",
-    icon: SquareActivity,
-    brandIcon: samsungIcon,
-    color: "text-blue-600",
-    iconBg: "bg-blue-50",
+    brandIconSrc: samsungIcon.src,
     dataTypes: ["Steps", "Heart Rate", "Stress", "Sleep"],
   },
   {
     id: "quest-diagnostics",
     name: "Quest Diagnostics",
-    description:
-      "Lab test results and diagnostic reports from Quest locations",
+    description: "Lab test results and diagnostic reports from Quest locations",
     category: "lab_services",
-    icon: TestTubes,
-    brandIcon: questIcon,
-    color: "text-orange-600",
-    iconBg: "bg-orange-50",
+    brandIconSrc: questIcon.src,
     dataTypes: ["Blood Work", "Metabolic", "Lipid Panel"],
   },
   {
@@ -202,10 +142,7 @@ const integrationCatalog: IntegrationDef[] = [
     name: "Labcorp",
     description: "Laboratory testing results and health screening data",
     category: "lab_services",
-    icon: FlaskConical,
-    brandIcon: labcorpIcon,
-    color: "text-cyan-600",
-    iconBg: "bg-cyan-50",
+    brandIconSrc: labcorpIcon.src,
     dataTypes: ["Blood Work", "Urinalysis", "Hormones"],
   },
   {
@@ -214,10 +151,7 @@ const integrationCatalog: IntegrationDef[] = [
     description:
       "Medical records, prescriptions, and visit summaries from Epic providers",
     category: "medical_records",
-    icon: FileHeart,
-    brandIcon: epicIcon,
-    color: "text-fuchsia-600",
-    iconBg: "bg-fuchsia-50",
+    brandIconSrc: epicIcon.src,
     dataTypes: ["Records", "Rx", "Labs", "Visits"],
   },
   {
@@ -226,10 +160,7 @@ const integrationCatalog: IntegrationDef[] = [
     description:
       "Electronic health records and clinical data from Cerner systems",
     category: "medical_records",
-    icon: Hospital,
-    brandIcon: cernerIcon,
-    color: "text-slate-600",
-    iconBg: "bg-slate-100",
+    brandIconSrc: cernerIcon.src,
     dataTypes: ["Records", "Labs", "Imaging", "Notes"],
   },
 ];
@@ -244,15 +175,17 @@ function IntegrationCard({
   onVote,
 }: {
   integration: IntegrationDef;
-  connection?: { provider: string; lastSyncAt: Date | null; lastSyncError: string | null };
+  connection?: {
+    provider: string;
+    lastSyncAt: Date | null;
+    lastSyncError: string | null;
+  };
   onSync: (provider: string) => void;
   onDisconnect: (provider: string) => void;
   isSyncing: boolean;
   hasVoted?: boolean;
   onVote?: (integrationId: string) => void;
 }) {
-  const Icon = integration.icon;
-  const hasBrandIcon = !!integration.brandIcon;
   const isImplemented = implementedProviders.has(integration.id);
   const isConnected = !!connection;
   const [showMenu, setShowMenu] = useState(false);
@@ -266,31 +199,19 @@ function IntegrationCard({
     }
     if (showMenu) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [showMenu]);
 
   const cardBody = (
     <div className="p-4 flex-1">
       <div className="flex items-start gap-3">
-        <div
-          className={cn(
-            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 overflow-hidden",
-            !hasBrandIcon && integration.iconBg,
-          )}
-        >
-          {hasBrandIcon ? (
-            <Image
-              src={integration.brandIcon!}
-              alt={integration.name}
-              className="h-full w-full object-cover rounded-xl"
-              width={40}
-              height={40}
-            />
-          ) : (
-            <Icon className={`h-5 w-5 ${integration.color}`} />
-          )}
-        </div>
+        <Avatar
+          src={integration.brandIconSrc ?? null}
+          name={integration.name}
+          className="size-10 rounded-xl"
+        />
         <div className="min-w-0">
           <h3 className="font-display text-[15px] font-semibold text-neutral-900">
             {integration.name}
@@ -317,7 +238,10 @@ function IntegrationCard({
   return (
     <div className="card-elevated flex flex-col">
       {isConnected ? (
-        <Link href={`/integrations/${integration.id}`} className="flex-1 hover:bg-neutral-50/50 transition-colors rounded-t-xl">
+        <Link
+          href={`/integrations/${integration.id}`}
+          className="flex-1 hover:bg-neutral-50/50 transition-colors rounded-t-xl"
+        >
           {cardBody}
         </Link>
       ) : (
@@ -392,7 +316,7 @@ function IntegrationCard({
               "w-full rounded-lg text-[13px] font-medium py-1.5 transition-colors cursor-pointer",
               hasVoted
                 ? "bg-green-50 text-green-600 cursor-default"
-                : "bg-neutral-100 text-neutral-600 hover:bg-accent-50 hover:text-accent-700"
+                : "bg-neutral-100 text-neutral-600 hover:bg-accent-50 hover:text-accent-700",
             )}
           >
             {hasVoted ? "We just pinged the CEO for you 🫡" : "I want this!"}
@@ -406,7 +330,9 @@ function IntegrationCard({
 export default function IntegrationsPage() {
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
   const [syncingProvider, setSyncingProvider] = useState<string | null>(null);
-  const [votedIntegrations, setVotedIntegrations] = useState<Set<string>>(new Set());
+  const [votedIntegrations, setVotedIntegrations] = useState<Set<string>>(
+    new Set(),
+  );
   const searchParams = useSearchParams();
 
   const connectionsQuery = trpc.integrations.list.useQuery();
@@ -479,7 +405,9 @@ export default function IntegrationsPage() {
   }
 
   function handleVote(integrationId: string) {
-    const name = integrationCatalog.find((i) => i.id === integrationId)?.name ?? integrationId;
+    const name =
+      integrationCatalog.find((i) => i.id === integrationId)?.name ??
+      integrationId;
     feedbackMutation.mutate(
       {
         message: `I want the ${name} integration!`,

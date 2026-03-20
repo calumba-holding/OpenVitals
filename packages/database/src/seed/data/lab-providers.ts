@@ -10,6 +10,8 @@ export const labProviderSeeds = [
     supportsInsurance: true,
     supportsDirectAccess: true,
     priceRange: "$$",
+    serviceType: "national_lab",
+    placeSearchQuery: "Quest Diagnostics",
     sortOrder: 1,
   },
   {
@@ -23,6 +25,8 @@ export const labProviderSeeds = [
     supportsInsurance: true,
     supportsDirectAccess: true,
     priceRange: "$$",
+    serviceType: "national_lab",
+    placeSearchQuery: "Labcorp",
     sortOrder: 2,
   },
   {
@@ -36,6 +40,8 @@ export const labProviderSeeds = [
     supportsInsurance: false,
     supportsDirectAccess: true,
     priceRange: "$",
+    serviceType: "online_ordering",
+    placeSearchQuery: null,
     sortOrder: 3,
   },
   {
@@ -49,6 +55,8 @@ export const labProviderSeeds = [
     supportsInsurance: false,
     supportsDirectAccess: true,
     priceRange: "$",
+    serviceType: "online_ordering",
+    placeSearchQuery: null,
     sortOrder: 4,
   },
   {
@@ -63,6 +71,8 @@ export const labProviderSeeds = [
     supportsInsurance: false,
     supportsDirectAccess: true,
     priceRange: "$$",
+    serviceType: "national_lab",
+    placeSearchQuery: "Life Extension",
     sortOrder: 5,
   },
   {
@@ -76,6 +86,8 @@ export const labProviderSeeds = [
     supportsInsurance: false,
     supportsDirectAccess: true,
     priceRange: "$",
+    serviceType: "online_ordering",
+    placeSearchQuery: null,
     sortOrder: 6,
   },
   {
@@ -89,6 +101,8 @@ export const labProviderSeeds = [
     supportsInsurance: false,
     supportsDirectAccess: true,
     priceRange: "$$$",
+    serviceType: "membership",
+    placeSearchQuery: null,
     sortOrder: 7,
   },
   {
@@ -102,6 +116,8 @@ export const labProviderSeeds = [
     supportsInsurance: false,
     supportsDirectAccess: true,
     priceRange: "$$",
+    serviceType: "online_ordering",
+    placeSearchQuery: null,
     sortOrder: 8,
   },
   {
@@ -115,6 +131,8 @@ export const labProviderSeeds = [
     supportsInsurance: false,
     supportsDirectAccess: true,
     priceRange: "$$",
+    serviceType: "franchise",
+    placeSearchQuery: "Any Lab Test Now",
     sortOrder: 9,
   },
   {
@@ -128,6 +146,8 @@ export const labProviderSeeds = [
     supportsInsurance: false,
     supportsDirectAccess: true,
     priceRange: "$",
+    serviceType: "online_ordering",
+    placeSearchQuery: null,
     sortOrder: 10,
   },
 ];

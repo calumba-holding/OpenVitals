@@ -24,6 +24,8 @@ export const labProviders = pgTable("lab_providers", {
   supportsInsurance: boolean("supports_insurance").default(true),
   supportsDirectAccess: boolean("supports_direct_access").default(true),
   priceRange: varchar("price_range", { length: 20 }),
+  serviceType: varchar("service_type", { length: 30 }),
+  placeSearchQuery: varchar("place_search_query", { length: 100 }),
   sortOrder: integer("sort_order").default(0),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
