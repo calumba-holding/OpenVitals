@@ -7,7 +7,7 @@ import { StatusBadge, type HealthStatus } from '@/components/health/status-badge
 import { MetricSummaryCard } from '@/components/health/metric-summary-card';
 import { DataTable, type DataTableColumn } from '@/components/data-table';
 import { deriveStatus, formatRange } from '@/lib/health-utils';
-import { cn, formatDate, getRelativeTime } from '@/lib/utils';
+import { cn, formatDate, formatObsValue, isDurationMetric, getRelativeTime } from '@/lib/utils';
 import { Button } from '@/components/button';
 import { toast } from 'sonner';
 import {
@@ -107,6 +107,14 @@ export default function IntegrationDetailPage({
   const { provider } = use(params);
 
   const { data, isLoading } = trpc.integrations.detail.useQuery({ provider });
+  const { data: metricsData } = trpc.metrics.list.useQuery();
+  const precisionMap = useMemo(() => {
+    const map = new Map<string, number | null>();
+    for (const m of metricsData ?? []) {
+      map.set(m.id, m.displayPrecision);
+    }
+    return map;
+  }, [metricsData]);
   const syncMutation = trpc.integrations.sync.useMutation();
   const disconnectMutation = trpc.integrations.disconnect.useMutation();
   const utils = trpc.useUtils();
@@ -204,7 +212,7 @@ export default function IntegrationDetailPage({
                     : 'text-neutral-900',
                 )}
               >
-                {obs.valueNumeric != null ? obs.valueNumeric : obs.valueText ?? '—'}
+                {formatObsValue(obs.metricCode, obs.valueNumeric, obs.valueText, precisionMap.get(obs.metricCode))}
               </span>
             </div>
           );
@@ -221,7 +229,7 @@ export default function IntegrationDetailPage({
         ),
       },
     ],
-    [],
+    [precisionMap],
   );
 
   function handleSync() {
@@ -429,12 +437,8 @@ export default function IntegrationDetailPage({
                 key={metric.code}
                 metricCode={metric.code}
                 name={metric.name}
-                latestValue={
-                  metric.latest.valueNumeric != null
-                    ? String(metric.latest.valueNumeric)
-                    : metric.latest.valueText ?? '—'
-                }
-                unit={metric.latest.unit ?? ''}
+                latestValue={formatObsValue(metric.code, metric.latest.valueNumeric, metric.latest.valueText, precisionMap.get(metric.code))}
+                unit={isDurationMetric(metric.code) ? '' : (metric.latest.unit ?? '')}
                 status={metric.status}
                 statusLabel={metric.statusLabel}
                 resultCount={metric.resultCount}

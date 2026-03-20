@@ -6,7 +6,7 @@ import { MetricCard } from '@/components/health/metric-card';
 import { MetricSummaryCard } from '@/components/health/metric-summary-card';
 import { AnimatedEmptyState } from '@/components/animated-empty-state';
 import { deriveStatus, formatRange } from '@/lib/health-utils';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatObsValue, isDurationMetric } from '@/lib/utils';
 import { TestTubes, Droplets, Activity, Microscope, FlaskConical, Dna } from 'lucide-react';
 
 const emptyIcons = [TestTubes, Droplets, Activity, Microscope, FlaskConical, Dna];
@@ -17,6 +17,10 @@ function formatMetricName(code: string) {
 
 export default function LabsPage() {
   const { data, isLoading } = trpc.observations.list.useQuery({ limit: 200 });
+  const { data: metricsData } = trpc.metrics.list.useQuery();
+  const precisionMap = new Map(
+    (metricsData ?? []).map((m) => [m.id, m.displayPrecision] as const),
+  );
   const items = data?.items ?? [];
 
   if (isLoading) {
@@ -115,12 +119,8 @@ export default function LabsPage() {
             <MetricCard
               key={mg.code}
               title={formatMetricName(mg.code)}
-              value={
-                mg.latest.valueNumeric != null
-                  ? String(mg.latest.valueNumeric)
-                  : mg.latest.valueText ?? '—'
-              }
-              unit={mg.latest.unit ?? ''}
+              value={formatObsValue(mg.code, mg.latest.valueNumeric, mg.latest.valueText, precisionMap.get(mg.code))}
+              unit={isDurationMetric(mg.code) ? '' : (mg.latest.unit ?? '')}
               delta={
                 mg.deltaVal
                   ? `${mg.deltaVal % 1 === 0 ? mg.deltaVal : mg.deltaVal.toFixed(1)} from last`
@@ -149,12 +149,8 @@ export default function LabsPage() {
               key={mg.code}
               metricCode={mg.code}
               name={formatMetricName(mg.code)}
-              latestValue={
-                mg.latest.valueNumeric != null
-                  ? String(mg.latest.valueNumeric)
-                  : mg.latest.valueText ?? '—'
-              }
-              unit={mg.latest.unit ?? ''}
+              latestValue={formatObsValue(mg.code, mg.latest.valueNumeric, mg.latest.valueText, precisionMap.get(mg.code))}
+              unit={isDurationMetric(mg.code) ? '' : (mg.latest.unit ?? '')}
               status={mg.status}
               statusLabel={statusLabel}
               resultCount={mg.count}

@@ -90,6 +90,36 @@ export const pluralize = (
   return `${word}s`;
 };
 
+export function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = Math.round(minutes % 60);
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
+
+const DURATION_METRICS = new Set(['sleep_duration']);
+
+export function formatObsValue(
+  metricCode: string,
+  valueNumeric: number | null | undefined,
+  valueText: string | null | undefined,
+  displayPrecision?: number | null,
+): string {
+  if (valueNumeric != null && DURATION_METRICS.has(metricCode)) {
+    return formatDuration(valueNumeric);
+  }
+  if (valueNumeric != null) {
+    if (displayPrecision != null) return valueNumeric.toFixed(displayPrecision);
+    return String(valueNumeric);
+  }
+  return valueText ?? '—';
+}
+
+export function isDurationMetric(metricCode: string): boolean {
+  return DURATION_METRICS.has(metricCode);
+}
+
 export function formatLabValue(value: number | null | undefined, unit?: string): string {
   if (value === null || value === undefined) return '-';
   const formatted = value % 1 === 0 ? value.toString() : value.toFixed(2);

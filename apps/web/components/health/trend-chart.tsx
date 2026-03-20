@@ -122,6 +122,15 @@ export function TrendChart({
 
   const stroke = statusStroke[status] ?? statusStroke.normal;
 
+  // Estimate how many x-axis labels can fit without overlapping.
+  // Each formatted date label is roughly 70px wide; the chart area
+  // is roughly the container width minus margins (~72px).  We compute
+  // the interval (skip every N ticks) so labels don't collide.
+  const estimatedLabelWidth = 72;
+  const estimatedChartWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth - 100, 900) : 700;
+  const maxTicks = Math.max(1, Math.floor(estimatedChartWidth / estimatedLabelWidth));
+  const tickInterval = Math.max(0, Math.ceil(data.length / maxTicks) - 1);
+
   // Compute Y domain with padding
   const values = data.map((d) => d.value);
   const allValues = [
@@ -151,6 +160,7 @@ export function TrendChart({
         <XAxis
           dataKey="date"
           tickFormatter={formatChartDate}
+          interval={tickInterval}
           tick={{ fontSize: 11, fontFamily: 'var(--font-mono)', fill: 'var(--color-neutral-400)' }}
           axisLine={{ stroke: 'var(--color-neutral-200)' }}
           tickLine={false}

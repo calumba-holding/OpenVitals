@@ -8,7 +8,7 @@ import {
   type HealthStatus,
 } from "@/components/health/status-badge";
 import { deriveStatus, formatRange } from "@/lib/health-utils";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, formatObsValue } from "@/lib/utils";
 import { DOC_TYPE_LABELS, IMPORT_JOB_STATUS_MAP } from "@/lib/constants";
 import {
   Check,
@@ -35,6 +35,10 @@ export default function ImportJobDetailPage({
   const utils = trpc.useUtils();
 
   const { data, isLoading } = trpc.importJobs.getDetail.useQuery({ id });
+  const { data: metricsData } = trpc.metrics.list.useQuery();
+  const precisionMap = new Map(
+    (metricsData ?? []).map((m) => [m.id, m.displayPrecision] as const),
+  );
   const confirmMutation = trpc.observations.confirm.useMutation({
     onSuccess: () => utils.importJobs.getDetail.invalidate({ id }),
   });
@@ -189,6 +193,7 @@ export default function ImportJobDetailPage({
               onConfirm={(obsId) => confirmMutation.mutate({ id: obsId })}
               onCorrect={(input) => correctMutation.mutateAsync(input)}
               isConfirming={confirmMutation.isPending}
+              precisionMap={precisionMap}
             />
           ))
         )}
@@ -241,6 +246,7 @@ function CategoryGroup({
   onConfirm,
   onCorrect,
   isConfirming,
+  precisionMap,
 }: {
   category: string;
   observations: {
@@ -264,6 +270,7 @@ function CategoryGroup({
     correctionNote?: string;
   }) => Promise<unknown>;
   isConfirming: boolean;
+  precisionMap: Map<string, number | null>;
 }) {
   const abnormalCount = observations.filter((o) => o.isAbnormal).length;
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -372,9 +379,7 @@ function CategoryGroup({
                         : "text-neutral-900",
                     )}
                   >
-                    {obs.valueNumeric != null
-                      ? obs.valueNumeric
-                      : (obs.valueText ?? "—")}
+                    {formatObsValue(obs.metricCode, obs.valueNumeric, obs.valueText, precisionMap.get(obs.metricCode))}
                   </span>
                   {obs.unit && (
                     <span className="text-[11px] text-neutral-400 font-mono">

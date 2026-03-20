@@ -24,6 +24,7 @@ export const metricDefinitions = pgTable('metric_definitions', {
   referenceRangeHigh: real('reference_range_high'),
   referenceRangeText: text('reference_range_text'),
   description: text('description'),
+  displayPrecision: integer('display_precision'),
   sortOrder: integer('sort_order').default(0),
 });
 

@@ -10,6 +10,7 @@ export interface MetricDefinitionSeed {
   referenceRangeHigh: number | null;
   referenceRangeText: string | null;
   description: string;
+  displayPrecision: number | null;
   sortOrder: number;
 }
 
@@ -27,6 +28,8 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 100,
     referenceRangeText: '70-100 mg/dL (fasting)',
     description: 'Fasting blood glucose level',
+    displayPrecision: 0,
+
     sortOrder: 1,
   },
   {
@@ -41,6 +44,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 20,
     referenceRangeText: '7-20 mg/dL',
     description: 'Blood urea nitrogen',
+    displayPrecision: 0,
     sortOrder: 2,
   },
   {
@@ -55,6 +59,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 1.2,
     referenceRangeText: '0.6-1.2 mg/dL',
     description: 'Serum creatinine for kidney function',
+    displayPrecision: 0,
     sortOrder: 3,
   },
   {
@@ -69,6 +74,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 145,
     referenceRangeText: '136-145 mEq/L',
     description: 'Serum sodium level',
+    displayPrecision: 0,
     sortOrder: 4,
   },
   {
@@ -83,6 +89,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 5.0,
     referenceRangeText: '3.5-5.0 mEq/L',
     description: 'Serum potassium level',
+    displayPrecision: 1,
     sortOrder: 5,
   },
   {
@@ -97,6 +104,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 106,
     referenceRangeText: '98-106 mEq/L',
     description: 'Serum chloride level',
+    displayPrecision: 0,
     sortOrder: 6,
   },
   {
@@ -111,6 +119,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 29,
     referenceRangeText: '23-29 mEq/L',
     description: 'Serum carbon dioxide / bicarbonate',
+    displayPrecision: 0,
     sortOrder: 7,
   },
   {
@@ -125,6 +134,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 10.5,
     referenceRangeText: '8.5-10.5 mg/dL',
     description: 'Serum calcium level',
+    displayPrecision: 1,
     sortOrder: 8,
   },
   {
@@ -139,6 +149,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 8.3,
     referenceRangeText: '6.0-8.3 g/dL',
     description: 'Total serum protein',
+    displayPrecision: 1,
     sortOrder: 9,
   },
   {
@@ -153,6 +164,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 5.5,
     referenceRangeText: '3.5-5.5 g/dL',
     description: 'Serum albumin',
+    displayPrecision: 1,
     sortOrder: 10,
   },
   {
@@ -167,6 +179,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 1.2,
     referenceRangeText: '0.1-1.2 mg/dL',
     description: 'Total bilirubin',
+    displayPrecision: 1,
     sortOrder: 11,
   },
   {
@@ -181,6 +194,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 147,
     referenceRangeText: '44-147 U/L',
     description: 'Alkaline phosphatase enzyme',
+    displayPrecision: 0,
     sortOrder: 12,
   },
   {
@@ -195,6 +209,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 56,
     referenceRangeText: '7-56 U/L',
     description: 'Alanine aminotransferase',
+    displayPrecision: 0,
     sortOrder: 13,
   },
   {
@@ -209,6 +224,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 40,
     referenceRangeText: '10-40 U/L',
     description: 'Aspartate aminotransferase',
+    displayPrecision: 0,
     sortOrder: 14,
   },
 
@@ -225,6 +241,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 11.0,
     referenceRangeText: '4.5-11.0 K/uL',
     description: 'White blood cell count',
+    displayPrecision: 2,
     sortOrder: 20,
   },
   {
@@ -239,6 +256,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 6.1,
     referenceRangeText: '4.7-6.1 M/uL (men), 4.2-5.4 M/uL (women)',
     description: 'Red blood cell count',
+    displayPrecision: 1,
     sortOrder: 21,
   },
   {
@@ -253,6 +271,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 17.5,
     referenceRangeText: '13.5-17.5 g/dL (men), 12.0-16.0 g/dL (women)',
     description: 'Hemoglobin concentration',
+    displayPrecision: 2,
     sortOrder: 22,
   },
   {
@@ -267,6 +286,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 48.6,
     referenceRangeText: '38.3-48.6% (men), 35.5-44.9% (women)',
     description: 'Percentage of blood volume occupied by red blood cells',
+    displayPrecision: 1,
     sortOrder: 23,
   },
   {
@@ -281,6 +301,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 100,
     referenceRangeText: '80-100 fL',
     description: 'Mean corpuscular volume',
+    displayPrecision: 1,
     sortOrder: 24,
   },
   {
@@ -295,6 +316,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 33,
     referenceRangeText: '27-33 pg',
     description: 'Mean corpuscular hemoglobin',
+    displayPrecision: 1,
     sortOrder: 25,
   },
   {
@@ -309,6 +331,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 36,
     referenceRangeText: '32-36 g/dL',
     description: 'Mean corpuscular hemoglobin concentration',
+    displayPrecision: 1,
     sortOrder: 26,
   },
   {
@@ -323,6 +346,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 14.5,
     referenceRangeText: '11.5-14.5%',
     description: 'Red cell distribution width',
+    displayPrecision: 1,
     sortOrder: 27,
   },
   {
@@ -337,6 +361,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 400,
     referenceRangeText: '150-400 K/uL',
     description: 'Platelet count',
+    displayPrecision: 1,
     sortOrder: 28,
   },
   {
@@ -351,6 +376,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 11.5,
     referenceRangeText: '7.5-11.5 fL',
     description: 'Mean platelet volume',
+    displayPrecision: 0,
     sortOrder: 29,
   },
 
@@ -367,6 +393,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 200,
     referenceRangeText: '< 200 mg/dL (desirable)',
     description: 'Total blood cholesterol level',
+    displayPrecision: 1,
     sortOrder: 30,
   },
   {
@@ -381,6 +408,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 100,
     referenceRangeText: '< 100 mg/dL (optimal)',
     description: 'Low-density lipoprotein cholesterol',
+    displayPrecision: 0,
     sortOrder: 31,
   },
   {
@@ -395,6 +423,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 60,
     referenceRangeText: '> 40 mg/dL (men), > 50 mg/dL (women)',
     description: 'High-density lipoprotein cholesterol',
+    displayPrecision: 0,
     sortOrder: 32,
   },
   {
@@ -409,6 +438,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 150,
     referenceRangeText: '< 150 mg/dL (normal)',
     description: 'Blood triglyceride level',
+    displayPrecision: 0,
     sortOrder: 33,
   },
   {
@@ -423,6 +453,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 40,
     referenceRangeText: '5-40 mg/dL',
     description: 'Very low-density lipoprotein cholesterol',
+    displayPrecision: 0,
     sortOrder: 34,
   },
 
@@ -439,6 +470,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 4.0,
     referenceRangeText: '0.4-4.0 mIU/L',
     description: 'Thyroid stimulating hormone',
+    displayPrecision: 0,
     sortOrder: 40,
   },
   {
@@ -453,6 +485,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 1.8,
     referenceRangeText: '0.8-1.8 ng/dL',
     description: 'Free thyroxine level',
+    displayPrecision: 2,
     sortOrder: 41,
   },
   {
@@ -467,6 +500,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 4.2,
     referenceRangeText: '2.3-4.2 pg/mL',
     description: 'Free triiodothyronine level',
+    displayPrecision: 2,
     sortOrder: 42,
   },
   {
@@ -481,6 +515,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 200,
     referenceRangeText: '80-200 ng/dL',
     description: 'Total triiodothyronine',
+    displayPrecision: 1,
     sortOrder: 43,
   },
   {
@@ -495,6 +530,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 12.0,
     referenceRangeText: '4.5-12.0 mcg/dL',
     description: 'Total thyroxine',
+    displayPrecision: 0,
     sortOrder: 44,
   },
 
@@ -511,6 +547,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 175,
     referenceRangeText: '65-175 mcg/dL (men), 50-170 mcg/dL (women)',
     description: 'Serum iron level',
+    displayPrecision: 1,
     sortOrder: 50,
   },
   {
@@ -525,6 +562,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 300,
     referenceRangeText: '12-300 ng/mL (men), 12-150 ng/mL (women)',
     description: 'Serum ferritin level (iron stores)',
+    displayPrecision: 0,
     sortOrder: 51,
   },
   {
@@ -539,6 +577,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 370,
     referenceRangeText: '250-370 mcg/dL',
     description: 'Total iron binding capacity',
+    displayPrecision: 0,
     sortOrder: 52,
   },
   {
@@ -553,6 +592,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 50,
     referenceRangeText: '20-50%',
     description: 'Transferrin saturation percentage',
+    displayPrecision: 0,
     sortOrder: 53,
   },
 
@@ -574,6 +614,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 100,
     referenceRangeText: '30-100 ng/mL (sufficient)',
     description: '25-hydroxyvitamin D level',
+    displayPrecision: 0,
     sortOrder: 60,
   },
   {
@@ -588,6 +629,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 900,
     referenceRangeText: '200-900 pg/mL',
     description: 'Vitamin B12 level',
+    displayPrecision: 1,
     sortOrder: 61,
   },
   {
@@ -602,6 +644,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 17.0,
     referenceRangeText: '2.7-17.0 ng/mL',
     description: 'Serum folate level',
+    displayPrecision: 0,
     sortOrder: 62,
   },
 
@@ -618,6 +661,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 0.3,
     referenceRangeText: '0.0-0.3 mg/dL',
     description: 'Direct (conjugated) bilirubin',
+    displayPrecision: 1,
     sortOrder: 70,
   },
   {
@@ -632,6 +676,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 48,
     referenceRangeText: '9-48 U/L',
     description: 'Gamma-glutamyl transferase',
+    displayPrecision: 1,
     sortOrder: 71,
   },
 
@@ -648,6 +693,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: null,
     referenceRangeText: '> 60 mL/min/1.73m2',
     description: 'Estimated glomerular filtration rate',
+    displayPrecision: 0,
     sortOrder: 80,
   },
   {
@@ -662,6 +708,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 7.2,
     referenceRangeText: '3.5-7.2 mg/dL (men), 2.6-6.0 mg/dL (women)',
     description: 'Serum uric acid',
+    displayPrecision: 0,
     sortOrder: 81,
   },
   {
@@ -676,6 +723,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 20,
     referenceRangeText: '10-20',
     description: 'BUN to creatinine ratio',
+    displayPrecision: 1,
     sortOrder: 82,
   },
 
@@ -692,6 +740,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 1000,
     referenceRangeText: '300-1000 ng/dL (men), 15-70 ng/dL (women)',
     description: 'Total testosterone',
+    displayPrecision: 0,
     sortOrder: 90,
   },
   {
@@ -706,6 +755,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 350,
     referenceRangeText: '10-40 pg/mL (men), 15-350 pg/mL (women)',
     description: 'Estradiol level',
+    displayPrecision: 0,
     sortOrder: 91,
   },
   {
@@ -720,6 +770,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 25,
     referenceRangeText: 'Varies by cycle phase',
     description: 'Serum progesterone',
+    displayPrecision: 0,
     sortOrder: 92,
   },
   {
@@ -734,6 +785,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 9.3,
     referenceRangeText: '1.5-9.3 mIU/mL (men)',
     description: 'Luteinizing hormone',
+    displayPrecision: 1,
     sortOrder: 93,
   },
   {
@@ -748,6 +800,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 12.4,
     referenceRangeText: '1.5-12.4 mIU/mL (men)',
     description: 'Follicle stimulating hormone',
+    displayPrecision: 1,
     sortOrder: 94,
   },
   {
@@ -762,6 +815,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 19.4,
     referenceRangeText: '6.2-19.4 mcg/dL (AM)',
     description: 'Serum cortisol (morning)',
+    displayPrecision: 1,
     sortOrder: 95,
   },
   {
@@ -776,6 +830,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 640,
     referenceRangeText: '280-640 mcg/dL (men 18-39), 65-380 mcg/dL (women 18-39)',
     description: 'Dehydroepiandrosterone sulfate',
+    displayPrecision: 1,
     sortOrder: 96,
   },
 
@@ -792,6 +847,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 10,
     referenceRangeText: '< 10 mg/L',
     description: 'C-reactive protein',
+    displayPrecision: 0,
     sortOrder: 100,
   },
   {
@@ -806,6 +862,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 20,
     referenceRangeText: '0-15 mm/hr (men), 0-20 mm/hr (women)',
     description: 'Erythrocyte sedimentation rate',
+    displayPrecision: 1,
     sortOrder: 101,
   },
   {
@@ -820,6 +877,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 3.0,
     referenceRangeText: '< 1.0 mg/L (low risk), 1.0-3.0 mg/L (avg risk), > 3.0 mg/L (high risk)',
     description: 'High-sensitivity C-reactive protein',
+    displayPrecision: 0,
     sortOrder: 102,
   },
 
@@ -836,6 +894,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 5.6,
     referenceRangeText: '< 5.7% (normal)',
     description: 'Average blood sugar over past 2-3 months',
+    displayPrecision: 1,
     sortOrder: 110,
   },
   {
@@ -850,6 +909,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 24.9,
     referenceRangeText: '2.6-24.9 uIU/mL (fasting)',
     description: 'Fasting insulin level',
+    displayPrecision: 1,
     sortOrder: 111,
   },
   {
@@ -864,6 +924,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 4.4,
     referenceRangeText: '1.1-4.4 ng/mL',
     description: 'C-peptide level',
+    displayPrecision: 1,
     sortOrder: 112,
   },
 
@@ -880,6 +941,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 100,
     referenceRangeText: '< 100 pg/mL',
     description: 'Brain natriuretic peptide',
+    displayPrecision: 1,
     sortOrder: 120,
   },
   {
@@ -894,6 +956,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 0.04,
     referenceRangeText: '< 0.04 ng/mL',
     description: 'Cardiac troponin I',
+    displayPrecision: 0,
     sortOrder: 121,
   },
   {
@@ -908,6 +971,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 5,
     referenceRangeText: '< 5 ng/mL',
     description: 'Creatine kinase MB isoenzyme',
+    displayPrecision: 3,
     sortOrder: 122,
   },
 
@@ -924,6 +988,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 8.0,
     referenceRangeText: '4.5-8.0',
     description: 'Urine pH',
+    displayPrecision: 1,
     sortOrder: 130,
   },
   {
@@ -938,6 +1003,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 1.030,
     referenceRangeText: '1.005-1.030',
     description: 'Urine specific gravity',
+    displayPrecision: 1,
     sortOrder: 131,
   },
   {
@@ -952,6 +1018,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 14,
     referenceRangeText: 'Negative',
     description: 'Urine protein',
+    displayPrecision: 3,
     sortOrder: 132,
   },
   {
@@ -966,6 +1033,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 15,
     referenceRangeText: 'Negative',
     description: 'Urine glucose',
+    displayPrecision: 0,
     sortOrder: 133,
   },
 
@@ -982,6 +1050,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 100,
     referenceRangeText: '60-100 bpm',
     description: 'Heart rate',
+    displayPrecision: 0,
     sortOrder: 140,
   },
   {
@@ -996,6 +1065,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 120,
     referenceRangeText: '< 120 mmHg (normal)',
     description: 'Systolic blood pressure',
+    displayPrecision: 0,
     sortOrder: 141,
   },
   {
@@ -1010,6 +1080,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 80,
     referenceRangeText: '< 80 mmHg (normal)',
     description: 'Diastolic blood pressure',
+    displayPrecision: 0,
     sortOrder: 142,
   },
   {
@@ -1024,6 +1095,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 99.1,
     referenceRangeText: '97.8-99.1 F',
     description: 'Body temperature',
+    displayPrecision: 0,
     sortOrder: 143,
   },
   {
@@ -1038,6 +1110,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 20,
     referenceRangeText: '12-20 breaths/min',
     description: 'Respiratory rate',
+    displayPrecision: 1,
     sortOrder: 144,
   },
   {
@@ -1052,6 +1125,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 100,
     referenceRangeText: '95-100%',
     description: 'Oxygen saturation',
+    displayPrecision: 1,
     sortOrder: 145,
   },
   {
@@ -1066,6 +1140,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: null,
     referenceRangeText: null,
     description: 'Body weight',
+    displayPrecision: 1,
     sortOrder: 146,
   },
   {
@@ -1080,6 +1155,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: null,
     referenceRangeText: null,
     description: 'Body height',
+    displayPrecision: 1,
     sortOrder: 147,
   },
   {
@@ -1094,6 +1170,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 24.9,
     referenceRangeText: '18.5-24.9 kg/m2 (normal)',
     description: 'Body mass index',
+    displayPrecision: 1,
     sortOrder: 148,
   },
 
@@ -1110,6 +1187,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 100,
     referenceRangeText: '60-100 bpm',
     description: 'Resting heart rate',
+    displayPrecision: 1,
     sortOrder: 149,
   },
   {
@@ -1124,6 +1202,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 100,
     referenceRangeText: '0-33% red, 34-66% yellow, 67-100% green',
     description: 'Wearable recovery score',
+    displayPrecision: 0,
     sortOrder: 200,
   },
   {
@@ -1138,6 +1217,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 100,
     referenceRangeText: '20-100 ms (typical)',
     description: 'Heart rate variability (root mean square of successive differences)',
+    displayPrecision: 0,
     sortOrder: 201,
   },
   {
@@ -1152,6 +1232,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 21,
     referenceRangeText: '0-21 scale',
     description: 'Wearable cardiovascular strain score',
+    displayPrecision: 1,
     sortOrder: 202,
   },
   {
@@ -1166,6 +1247,7 @@ export const metricDefinitionSeeds: MetricDefinitionSeed[] = [
     referenceRangeHigh: 540,
     referenceRangeText: '7-9 hours (420-540 min)',
     description: 'Total sleep duration',
+    displayPrecision: 0,
     sortOrder: 203,
   },
 ];

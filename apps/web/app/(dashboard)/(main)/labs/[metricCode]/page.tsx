@@ -6,7 +6,7 @@ import { TitleActionHeader } from '@/components/title-action-header';
 import { StatusBadge, type HealthStatus } from '@/components/health/status-badge';
 import { TrendChart } from '@/components/health/trend-chart';
 import { deriveStatus, formatRange } from '@/lib/health-utils';
-import { cn, formatDate } from '@/lib/utils';
+import { cn, formatDate, formatObsValue, isDurationMetric } from '@/lib/utils';
 import { DataTable, type DataTableColumn } from '@/components/data-table';
 
 const TIME_RANGES = [
@@ -22,6 +22,7 @@ type TimeRangeKey = (typeof TIME_RANGES)[number]['key'];
 function formatMetricName(code: string) {
   return code.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
+
 
 function SummaryCard({
   label,
@@ -67,6 +68,8 @@ export default function LabDetailPage({
     metricCode,
     limit: 200,
   });
+  const { data: metricsData } = trpc.metrics.list.useQuery();
+  const displayPrecision = metricsData?.find((m) => m.id === metricCode)?.displayPrecision ?? null;
 
   const items = data?.items ?? [];
 
@@ -131,9 +134,9 @@ export default function LabDetailPage({
                     : 'text-neutral-900',
                 )}
               >
-                {obs.valueNumeric != null ? obs.valueNumeric : obs.valueText ?? '—'}
+                {formatObsValue(metricCode, obs.valueNumeric, obs.valueText, displayPrecision)}
               </span>
-              {obs.unit && (
+              {!isDurationMetric(metricCode) && obs.unit && (
                 <span className="text-[11px] text-neutral-400 font-mono">{obs.unit}</span>
               )}
             </div>
@@ -181,7 +184,7 @@ export default function LabDetailPage({
         ),
       },
     ],
-    [],
+    [metricCode, displayPrecision],
   );
 
   const latest = sorted[0];
@@ -278,7 +281,8 @@ export default function LabDetailPage({
             />
             {latest?.valueNumeric != null && (
               <span className="text-sm text-neutral-500 font-mono tabular-nums">
-                {latest.valueNumeric} {latest.unit ?? ''}
+                {formatObsValue(metricCode, latest.valueNumeric, latest.valueText, displayPrecision)}{' '}
+                {isDurationMetric(metricCode) ? '' : latest.unit ?? ''}
               </span>
             )}
           </div>
@@ -289,12 +293,8 @@ export default function LabDetailPage({
       <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <SummaryCard
           label="Latest value"
-          value={
-            latest?.valueNumeric != null
-              ? String(latest.valueNumeric)
-              : latest?.valueText ?? '—'
-          }
-          subtext={latest?.unit ?? undefined}
+          value={formatObsValue(metricCode, latest?.valueNumeric, latest?.valueText, displayPrecision)}
+          subtext={isDurationMetric(metricCode) ? undefined : (latest?.unit ?? undefined)}
           variant={status === 'critical' ? 'warning' : status === 'warning' ? 'warning' : 'default'}
         />
         <SummaryCard
