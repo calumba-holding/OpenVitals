@@ -19,6 +19,7 @@ import { Logo } from "./logo";
 import { PrimaryNav } from "./primary-nav";
 import { NavSearch } from "./nav-search";
 import { MobileNav } from "./mobile-nav";
+import { FeedbackPopover } from "./feedback-popover";
 
 export function TopNav() {
   const pathname = usePathname();
@@ -57,6 +58,8 @@ export function TopNav() {
                 </span>
               </Link>
             ))}
+
+            <FeedbackPopover />
 
             {/* User menu */}
             <div className="ml-2 flex items-center gap-2 pl-3 border-l border-neutral-200">

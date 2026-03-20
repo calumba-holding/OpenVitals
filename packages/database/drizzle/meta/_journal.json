@@ -43,6 +43,13 @@
       "when": 1774026539896,
       "tag": "0005_overjoyed_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1774027269079,
+      "tag": "0006_right_nehzno",
+      "breakpoints": true
     }
   ]
 }
