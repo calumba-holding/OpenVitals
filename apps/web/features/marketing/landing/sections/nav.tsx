@@ -33,7 +33,7 @@ export function Nav() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-neutral-50">
+      <header className="sticky top-0 z-50 bg-neutral-50 border-b">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 md:px-10 h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0">
