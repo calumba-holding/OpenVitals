@@ -32,3 +32,27 @@ export function DashBadge({
     </div>
   );
 }
+export function CubeBadge({
+  children,
+  className,
+  border,
+}: {
+  children: ReactNode;
+  className?: string;
+  border?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-2",
+        border && "border border-accent-500 px-1 py-1 pl-1.5",
+        className,
+      )}
+    >
+      <div className="size-[5px] bg-accent-500" />
+      <span className="whitespace-nowrap text-inherit text-pretty font-mono text-[12px] pt-px leading-none tracking-[-0.015rem] uppercase">
+        {children}
+      </span>
+    </div>
+  );
+}

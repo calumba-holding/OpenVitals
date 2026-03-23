@@ -5,7 +5,7 @@ import { Logo } from "@/assets/app/images/logo";
 import { Spark } from "../components/spark";
 import { CornerCrossBadge } from "@/components/decorations/corner-cross";
 import { Button } from "@/components/button";
-import { DashBadge } from "@/components/decorations/dot-badge";
+import { CubeBadge } from "@/components/decorations/dot-badge";
 
 /* ------------------------------------------------------------------ */
 /*  Floating data elements — animated "living dashboard"               */
@@ -451,12 +451,14 @@ export function Hero() {
       <div className="-z-0 absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none">
         <Logo className="size-[80vh] animate-[spin_60s_linear_infinite]" />
       </div>
-      <section className="relative mx-auto grid h-auto w-full max-w-[1400px] grid-cols-4 gap-x-4 lg:grid-cols-12 lg:gap-x-6 mt-6 my-20 bg-transparent px-4 first:mt-4 lg:mt-20 lg:px-9 first:lg:mt-10 lg:mb-30 lg:h-[calc(100dvh-160px)] lg:max-h-[725px] lg:min-h-[620px] xl:mb-22">
+      <section className="relative mx-auto grid h-auto w-full max-w-[1400px] grid-cols-1 gap-x-4 lg:grid-cols-2 lg:gap-x-6 mt-6 my-20 bg-transparent px-4 first:mt-4 lg:mt-20 lg:px-9 first:lg:mt-10 lg:mb-30 lg:h-[calc(100dvh-160px)] lg:max-h-[725px] lg:min-h-[620px] xl:mb-22">
         {/* Left — text content */}
-        <div className="z-10 col-span-4 flex flex-col justify-between lg:col-span-6 lg:max-w-none">
+        <div className="z-10 col-span-full flex flex-col justify-between lg:col-span-1 lg:max-w-none">
           <div className="flex flex-col gap-y-6 lg:gap-y-8">
             {/* Section label */}
-            <DashBadge>Open Source</DashBadge>
+            <div className="flex">
+              <CubeBadge border>Open Source</CubeBadge>
+            </div>
 
             {/* Headline */}
             <h1 className="text-foreground font-normal text-[40px] leading-[100%] tracking-[-0.16rem] lg:tracking-[-0.18rem] lg:-ml-1 lg:text-6xl 2xl:text-7xl visible">
@@ -495,7 +497,7 @@ export function Hero() {
         </div>
 
         {/* Right — floating data elements */}
-        <div className="mt-6 lg:mt-0 pointer-events-none relative h-full w-full overflow-hidden md:pointer-events-auto z-0 col-span-full aspect-[3/2] lg:aspect-auto lg:col-span-6 lg:w-[clamp(600px,54vw,1000px)] lg:max-w-none">
+        <div className="mt-6 lg:mt-0 pointer-events-none relative h-full w-full overflow-hidden md:pointer-events-auto z-0 col-span-full aspect-[3/2] lg:aspect-auto lg:col-span-1 lg:w-[clamp(600px,54vw,1000px)] lg:max-w-none">
           <FloatingElements />
         </div>
       </section>
