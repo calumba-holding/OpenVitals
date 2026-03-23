@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
-export function CornerCross({ className }: { className: string }) {
+export function CornerCross({ className }: { className?: string }) {
   return (
     <svg
       width="5"
@@ -10,6 +10,29 @@ export function CornerCross({ className }: { className: string }) {
     >
       <path d="M2 0h1v2h2v1h-2v2h-1v-2h-2v-1h2z" />
     </svg>
+  );
+}
+export function CornerCrosses({
+  cornerCrossClassName,
+}: {
+  cornerCrossClassName?: string;
+}) {
+  return (
+    <>
+      <span className="border-accent-500/60 bg-accent-500/10 absolute inset-0 border border-dashed" />
+      <CornerCross
+        className={cn("top-[-2px] left-[-2px]", cornerCrossClassName)}
+      />
+      <CornerCross
+        className={cn("top-[-2px] right-[-2px]", cornerCrossClassName)}
+      />
+      <CornerCross
+        className={cn("bottom-[-2px] left-[-2px]", cornerCrossClassName)}
+      />
+      <CornerCross
+        className={cn("bottom-[-2px] right-[-2px]", cornerCrossClassName)}
+      />
+    </>
   );
 }
 

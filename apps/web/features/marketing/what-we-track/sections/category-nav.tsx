@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { CATEGORY_CONFIG, CATEGORY_ORDER, BIOMARKERS } from "../data";
+import { CornerCrosses } from "@/components/decorations/corner-cross";
 
 interface CategoryNavProps {
   activeCategory: string;
@@ -53,46 +54,54 @@ export function CategoryNav({
 
   // Sidebar variant
   return (
-    <nav className="sticky top-20 self-start">
-      <div className="space-y-px">
-        {categories.map((cat) => {
-          const config = CATEGORY_CONFIG[cat];
-          if (!config) return null;
-          const isActive = activeCategory === cat;
-          return (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => onCategoryClick(cat)}
+    <nav className="sticky top-20 self-start border border-neutral-200 bg-white">
+      {categories.map((cat) => {
+        const config = CATEGORY_CONFIG[cat];
+        if (!config) return null;
+        const isActive = activeCategory === cat;
+        const Icon = config.icon;
+        return (
+          <button
+            key={cat}
+            type="button"
+            onClick={() => onCategoryClick(cat)}
+            className={cn(
+              "relative group flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors cursor-pointer border-b border-neutral-100 last:border-b-0",
+              isActive ? "bg-neutral-50" : "hover:bg-neutral-50/50",
+            )}
+          >
+            {isActive && <CornerCrosses />}
+            <span
               className={cn(
-                "group flex w-full items-center gap-2 py-[7px] text-left transition-colors cursor-pointer border-l-2",
+                "flex size-7 shrink-0 items-center justify-center transition-colors",
                 isActive
-                  ? "border-neutral-900 pl-3"
-                  : "border-transparent pl-3 hover:border-neutral-300",
+                  ? "bg-accent-500 text-white"
+                  : "bg-neutral-100 text-neutral-400 group-hover:bg-neutral-200 group-hover:text-neutral-500",
               )}
             >
-              <span
-                className={cn(
-                  "font-mono text-[11px] uppercase tracking-[0.04em] transition-colors",
-                  isActive
-                    ? "font-bold text-neutral-900"
-                    : "text-neutral-400 group-hover:text-neutral-600",
-                )}
-              >
-                {config.label}
-              </span>
-              <span
-                className={cn(
-                  "ml-auto font-mono text-[10px] tabular-nums transition-colors",
-                  isActive ? "text-neutral-500" : "text-neutral-300",
-                )}
-              >
-                {getCategoryCount(cat)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              <Icon className="size-3.5" />
+            </span>
+            <span
+              className={cn(
+                "font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors",
+                isActive
+                  ? "text-neutral-900"
+                  : "text-neutral-400 group-hover:text-neutral-600",
+              )}
+            >
+              {config.label}
+            </span>
+            <span
+              className={cn(
+                "ml-auto font-mono text-[10px] tabular-nums transition-colors",
+                isActive ? "text-neutral-500" : "text-neutral-300",
+              )}
+            >
+              {getCategoryCount(cat)}
+            </span>
+          </button>
+        );
+      })}
     </nav>
   );
 }
