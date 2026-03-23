@@ -4,6 +4,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc/client";
 import { TitleActionHeader } from "@/components/title-action-header";
+import { PillTabs } from "@/components/pill-tabs";
 import { ProviderCard } from "@/components/testing/provider-card";
 import {
   ProviderFilters,
@@ -49,20 +50,12 @@ export default function TestingPage() {
         title="Testing"
         subtitle="Find labs, explore panels, and plan your next tests."
         under={
-          <div className="pill-tabs mt-1">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setTab(tab.id)}
-                className={cn(
-                  "pill-tab",
-                  activeTab === tab.id && "pill-tab-active",
-                )}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          <PillTabs<Tab>
+            items={tabs}
+            value={activeTab}
+            onChange={setTab}
+            className="mt-1"
+          />
         }
       />
 
