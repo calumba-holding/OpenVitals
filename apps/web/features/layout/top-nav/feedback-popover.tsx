@@ -57,7 +57,7 @@ export function FeedbackPopover() {
         <button
           className={cn(
             "hidden md:flex items-center gap-1.5 px-2.5 py-1.5 text-[13px] font-medium transition-colors",
-            "text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50"
+            "text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50",
           )}
         >
           <MessageSquare className="h-3.5 w-3.5" />
@@ -66,7 +66,7 @@ export function FeedbackPopover() {
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-80">
+      <PopoverContent align="end" className="w-80 card">
         <div className="space-y-3">
           <p className="text-sm font-medium">Send us feedback</p>
 
@@ -80,7 +80,7 @@ export function FeedbackPopover() {
                   "text-2xl p-1.5 transition-colors",
                   rating === r.value
                     ? "bg-accent-100 ring-1 ring-accent-300"
-                    : "hover:bg-neutral-100"
+                    : "hover:bg-neutral-100",
                 )}
               >
                 {r.emoji}

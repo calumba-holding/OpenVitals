@@ -8,7 +8,9 @@ import { AddMedicationModal } from '@/components/health/add-medication-modal';
 import { useModal } from '@/components/modal/provider';
 import { Button } from '@/components/button';
 import { formatDate } from '@/lib/utils';
-import { Pill, Plus, Syringe, Tablets, Heart, ShieldCheck, Stethoscope } from 'lucide-react';
+import { Pill, Plus, Syringe, Tablets, Heart, ShieldCheck, Stethoscope, Download } from 'lucide-react';
+import { downloadCsv } from '@/lib/export';
+import { AdherenceTracker } from '@/components/health/adherence-tracker';
 
 const emptyIcons = [Pill, Syringe, Tablets, Heart, ShieldCheck, Stethoscope];
 
@@ -55,7 +57,44 @@ export default function MedicationsPage() {
 
   return (
     <div>
-      <TitleActionHeader title="Medications" subtitle="Track your medications, supplements, and adherence." onAddButtonClick={openAddModal} addButtonText="Add medication" />
+      <TitleActionHeader
+        title="Medications"
+        subtitle="Track your medications, supplements, and adherence."
+        onAddButtonClick={openAddModal}
+        addButtonText="Add medication"
+        actions={
+          items.length > 0 ? (
+            <Button
+              variant="outline-subtle"
+              size="sm"
+              icon={<Download />}
+              text="Export CSV"
+              onClick={() => {
+                downloadCsv(
+                  'openvitals-medications',
+                  ['Name', 'Generic Name', 'Category', 'Dosage', 'Frequency', 'Route', 'Prescriber', 'Indication', 'Status', 'Start Date', 'End Date'],
+                  items.map((m) => [
+                    m.name,
+                    m.genericName,
+                    m.category,
+                    m.dosage,
+                    m.frequency,
+                    m.route,
+                    m.prescriber,
+                    m.indication,
+                    m.isActive ? 'Active' : 'Discontinued',
+                    m.startDate ? new Date(m.startDate).toISOString().split('T')[0] : null,
+                    m.endDate ? new Date(m.endDate).toISOString().split('T')[0] : null,
+                  ]),
+                );
+              }}
+            />
+          ) : undefined
+        }
+      />
+
+      {/* Adherence tracker */}
+      <AdherenceTracker medications={items} />
 
       {active.length > 0 && (
         <div className="mt-7 mb-6">

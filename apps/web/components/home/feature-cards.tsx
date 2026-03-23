@@ -113,7 +113,7 @@ export function MedicationsPreviewContent({ items }: MedicationsPreviewContentPr
       <div className="mt-3 space-y-1.5">
         {top3.map((m) => (
           <div key={m.id} className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-health-normal)]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-health-normal" />
             <span className="text-[12px] text-neutral-600 font-body">{m.name}</span>
           </div>
         ))}

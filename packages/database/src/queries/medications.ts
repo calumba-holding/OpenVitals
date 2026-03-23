@@ -80,6 +80,28 @@ export async function updateMedication(
   return result[0] ?? null;
 }
 
+export async function getAdherenceLogs(
+  db: Database,
+  params: {
+    userId: string;
+    dateFrom: string;
+    dateTo: string;
+  },
+) {
+  const { gte, lte } = await import('drizzle-orm');
+  return db
+    .select()
+    .from(medicationLogs)
+    .where(
+      and(
+        eq(medicationLogs.userId, params.userId),
+        gte(medicationLogs.logDate, params.dateFrom),
+        lte(medicationLogs.logDate, params.dateTo),
+      ),
+    )
+    .orderBy(desc(medicationLogs.logDate));
+}
+
 export async function logMedicationAdherence(
   db: Database,
   params: {

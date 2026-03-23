@@ -1,20 +1,22 @@
-'use client';
+"use client";
 
-import * as TooltipPrimitive from '@radix-ui/react-tooltip';
-import { cn } from '@/lib/utils';
-import { HelpCircle } from 'lucide-react';
-import { type ReactNode, useState } from 'react';
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { cn } from "@/lib/utils";
+import { HelpCircle } from "lucide-react";
+import { type ReactNode, useState } from "react";
 
-export interface TooltipProps
-  extends Omit<TooltipPrimitive.TooltipContentProps, 'content'> {
+export interface TooltipProps extends Omit<
+  TooltipPrimitive.TooltipContentProps,
+  "content"
+> {
   content:
     | ReactNode
     | string
     | ((props: { setOpen: (open: boolean) => void }) => ReactNode);
   contentClassName?: string;
   disabled?: boolean;
-  disableHoverableContent?: TooltipPrimitive.TooltipProps['disableHoverableContent'];
-  delayDuration?: TooltipPrimitive.TooltipProps['delayDuration'];
+  disableHoverableContent?: TooltipPrimitive.TooltipProps["disableHoverableContent"];
+  delayDuration?: TooltipPrimitive.TooltipProps["delayDuration"];
 }
 
 export function Tooltip({
@@ -22,7 +24,7 @@ export function Tooltip({
   content,
   contentClassName,
   disabled,
-  side = 'top',
+  side = "top",
   disableHoverableContent,
   delayDuration = 0,
   ...rest
@@ -47,20 +49,20 @@ export function Tooltip({
         <TooltipPrimitive.Content
           sideOffset={8}
           side={side}
-          className="animate-scale-in pointer-events-auto z-[99] items-center overflow-hidden border border-neutral-200 bg-white"
+          className="animate-scale-in pointer-events-auto z-[99] items-center overflow-hidden card"
           collisionPadding={0}
           {...rest}
         >
-          {typeof content === 'string' ? (
+          {typeof content === "string" ? (
             <span
               className={cn(
-                'block max-w-xs text-pretty px-3 py-1.5 text-center text-sm text-neutral-700',
+                "block max-w-xs text-pretty px-3 py-1.5 text-center text-sm text-neutral-700",
                 contentClassName,
               )}
             >
               {content}
             </span>
-          ) : typeof content === 'function' ? (
+          ) : typeof content === "function" ? (
             content({ setOpen })
           ) : (
             content
@@ -71,7 +73,7 @@ export function Tooltip({
   );
 }
 
-export function InfoTooltip(props: Omit<TooltipProps, 'children'>) {
+export function InfoTooltip(props: Omit<TooltipProps, "children">) {
   return (
     <Tooltip {...props}>
       <HelpCircle className="h-4 w-4 text-muted-foreground" />

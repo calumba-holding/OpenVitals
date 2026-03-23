@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createRouter, protectedProcedure } from '../init';
-import { listMedications, createMedication, updateMedication, logMedicationAdherence } from '@openvitals/database';
+import { listMedications, createMedication, updateMedication, logMedicationAdherence, getAdherenceLogs } from '@openvitals/database';
 
 export const medicationsRouter = createRouter({
   list: protectedProcedure
@@ -73,6 +73,20 @@ export const medicationsRouter = createRouter({
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Medication not found' });
       }
       return { success: true };
+    }),
+
+  getAdherence: protectedProcedure
+    .input(z.object({
+      dateFrom: z.string(),
+      dateTo: z.string(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const logs = await getAdherenceLogs(ctx.db, {
+        userId: ctx.userId,
+        dateFrom: input.dateFrom,
+        dateTo: input.dateTo,
+      });
+      return { logs };
     }),
 
   logAdherence: protectedProcedure

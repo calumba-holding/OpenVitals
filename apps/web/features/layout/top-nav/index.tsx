@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Cable, LogOut, Settings } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth/client";
 import { Avatar } from "@/components/avatar";
 import {
@@ -14,9 +13,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { secondaryNav } from "./nav-config";
 import { Logo } from "./logo";
 import { PrimaryNav } from "./primary-nav";
+import { MoreDropdown } from "./more-dropdown";
 import { NavSearch } from "./nav-search";
 import { MobileNav } from "./mobile-nav";
 import { FeedbackPopover } from "./feedback-popover";
@@ -34,31 +33,12 @@ export function TopNav() {
           <div className="flex items-center gap-6 md:ml-2">
             <Logo />
             <PrimaryNav pathname={pathname} />
+            <MoreDropdown pathname={pathname} />
           </div>
 
           {/* Right side */}
           <div className="flex items-center gap-2">
             <NavSearch />
-
-            {/* Secondary nav icons */}
-            {secondaryNav.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "hidden md:flex items-center gap-1.5 px-2.5 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.04em] transition-colors",
-                  pathname.startsWith(item.href)
-                    ? "text-accent-700 bg-accent-50"
-                    : "text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50",
-                )}
-              >
-                <item.icon className="h-3.5 w-3.5" />
-                <span className="hidden lg:inline whitespace-nowrap min-w-0">
-                  {item.name}
-                </span>
-              </Link>
-            ))}
-
             <FeedbackPopover />
 
             {/* User menu */}
@@ -73,7 +53,7 @@ export function TopNav() {
                     />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56 card">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">

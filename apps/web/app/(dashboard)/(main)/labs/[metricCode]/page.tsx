@@ -15,6 +15,7 @@ import {
 } from "@/lib/health-utils";
 import { cn, formatDate, formatObsValue, isDurationMetric } from "@/lib/utils";
 import { DataTable, type DataTableColumn } from "@/components/data-table";
+import { Pill, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 const TIME_RANGES = [
   { key: "3m", label: "3M", months: 3 },
@@ -43,8 +44,8 @@ function SummaryCard({
 }) {
   const valueColor = {
     default: "text-neutral-900",
-    warning: "text-[var(--color-health-warning)]",
-    success: "text-[var(--color-health-normal)]",
+    warning: "text-health-warning",
+    success: "text-health-normal",
     accent: "text-accent-600",
   }[variant];
 
@@ -86,6 +87,7 @@ export default function LabDetailPage({
   const { data: optimalRangesData } = trpc.optimalRanges.forUser.useQuery({
     metricCode,
   });
+  const { data: medsData } = trpc.medications.list.useQuery({});
   const displayPrecision =
     metricsData?.find((m) => m.id === metricCode)?.displayPrecision ?? null;
   const showOptimal = prefsData?.showOptimalRanges ?? true;
@@ -151,8 +153,8 @@ export default function LabDetailPage({
                   "text-[15px] font-semibold tracking-[-0.01em] font-mono tabular-nums",
                   obs.isAbnormal
                     ? obsStatus === "critical"
-                      ? "text-[var(--color-health-critical)]"
-                      : "text-[var(--color-health-warning)]"
+                      ? "text-health-critical"
+                      : "text-health-warning"
                     : "text-neutral-900",
                 )}
               >
@@ -461,6 +463,13 @@ export default function LabDetailPage({
         </div>
       )}
 
+      {/* Medication context + trend insight */}
+      <MetricContext
+        observations={sorted}
+        medications={medsData?.items ?? []}
+        metricName={metricName}
+      />
+
       {/* Results table */}
       <DataTable
         className="mt-6"
@@ -470,10 +479,127 @@ export default function LabDetailPage({
           getRowKey: (obs) => obs.id,
           getRowTint: (obs) =>
             obs.isAbnormal
-              ? "bg-[var(--color-health-warning-bg)]/40"
+              ? "bg-health-warning-bg/40"
               : undefined,
         }}
       />
+    </div>
+  );
+}
+
+function MetricContext({
+  observations,
+  medications,
+  metricName,
+}: {
+  observations: Array<{
+    valueNumeric?: number | null;
+    isAbnormal?: boolean | null;
+    observedAt: string | Date;
+  }>;
+  medications: Array<{
+    id: string;
+    name: string;
+    dosage?: string | null;
+    startDate?: string | Date | null;
+    endDate?: string | Date | null;
+    isActive?: boolean | null;
+  }>;
+  metricName: string;
+}) {
+  if (observations.length < 2) return null;
+
+  const oldest = new Date(observations[observations.length - 1]!.observedAt).getTime();
+  const newest = new Date(observations[0]!.observedAt).getTime();
+
+  // Find medications that overlap with the observation period
+  const overlapping = medications.filter((m) => {
+    if (!m.startDate) return false;
+    const start = new Date(m.startDate).getTime();
+    const end = m.endDate ? new Date(m.endDate).getTime() : Date.now();
+    return start <= newest && end >= oldest;
+  });
+
+  // Compute trend insight
+  const values = observations
+    .filter((o) => o.valueNumeric != null)
+    .map((o) => o.valueNumeric!);
+
+  if (values.length < 2) return null;
+
+  const firstHalf = values.slice(Math.floor(values.length / 2));
+  const secondHalf = values.slice(0, Math.floor(values.length / 2));
+  const firstAvg = firstHalf.reduce((s, v) => s + v, 0) / firstHalf.length;
+  const secondAvg = secondHalf.reduce((s, v) => s + v, 0) / secondHalf.length;
+  const changePct = firstAvg !== 0 ? ((secondAvg - firstAvg) / Math.abs(firstAvg)) * 100 : 0;
+
+  const latestAbnormal = observations[0]?.isAbnormal;
+  const trendDirection = Math.abs(changePct) < 3 ? 'stable' : changePct > 0 ? 'rising' : 'falling';
+
+  if (overlapping.length === 0 && trendDirection === 'stable') return null;
+
+  return (
+    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Trend insight */}
+      <div className="card p-4">
+        <div className="flex items-center gap-2 mb-2">
+          {trendDirection === 'rising' ? (
+            <TrendingUp className="size-3.5 text-neutral-500" />
+          ) : trendDirection === 'falling' ? (
+            <TrendingDown className="size-3.5 text-neutral-500" />
+          ) : (
+            <Minus className="size-3.5 text-neutral-500" />
+          )}
+          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.04em] text-neutral-400">
+            Trend
+          </span>
+        </div>
+        <p className="text-[13px] font-medium text-neutral-800 font-body">
+          {trendDirection === 'stable'
+            ? `${metricName} has been stable`
+            : `${metricName} is ${trendDirection} (${changePct > 0 ? '+' : ''}${Math.round(changePct)}%)`}
+        </p>
+        <p className="text-[11px] text-neutral-500 font-body mt-1">
+          Based on {observations.length} results over this period.
+          {latestAbnormal && trendDirection === 'falling'
+            ? ' The downward trend may indicate improvement.'
+            : ''}
+        </p>
+      </div>
+
+      {/* Medications during this period */}
+      {overlapping.length > 0 && (
+        <div className="card p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Pill className="size-3.5 text-neutral-500" />
+            <span className="text-[11px] font-mono font-bold uppercase tracking-[0.04em] text-neutral-400">
+              Medications during this period
+            </span>
+          </div>
+          <div className="space-y-2">
+            {overlapping.slice(0, 4).map((med) => (
+              <div key={med.id} className="flex items-center justify-between">
+                <span className="text-[12px] font-medium text-neutral-700 font-body">
+                  {med.name}
+                </span>
+                <div className="flex items-center gap-2">
+                  {med.dosage && (
+                    <span className="text-[10px] font-mono text-neutral-400">
+                      {med.dosage}
+                    </span>
+                  )}
+                  <span className={cn(
+                    "text-[10px] font-mono",
+                    med.isActive ? "text-health-normal" : "text-neutral-400",
+                  )}>
+                    {med.isActive ? 'Active' : 'Ended'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

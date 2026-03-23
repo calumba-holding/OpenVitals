@@ -37,7 +37,7 @@ export function PrimaryNav({ pathname }: PrimaryNavProps) {
     <nav className="hidden md:flex items-center gap-1">
       <div
         ref={navRef}
-        className="relative flex items-center border border-neutral-200 p-0.5 rounded"
+        className="relative flex items-center p-0.5 border rounded bg-neutral-100"
       >
         {/* Animated highlight */}
         {activeIndex !== -1 && highlightStyle.width > 0 && (

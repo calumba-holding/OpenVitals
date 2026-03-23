@@ -37,10 +37,7 @@ export default function PanelDetailPage() {
         <TitleActionHeader title={undefined} showBackButton />
         <div className="mt-5 space-y-2">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="card h-14 animate-pulse bg-neutral-50"
-            />
+            <div key={i} className="card h-14 animate-pulse bg-neutral-50" />
           ))}
         </div>
       </div>
@@ -165,7 +162,7 @@ export default function PanelDetailPage() {
           href="/testing?tab=directory"
           className={cn(
             "inline-flex items-center gap-2 rounded-lg px-4 py-2.5",
-            "border border-neutral-200 bg-white text-sm font-medium text-neutral-700",
+            "card text-sm font-medium text-neutral-700",
             "transition-colors hover:border-[var(--color-accent-300)] hover:text-[var(--color-accent-600)]",
           )}
         >

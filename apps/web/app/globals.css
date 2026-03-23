@@ -427,3 +427,31 @@ select:focus {
   background: var(--color-accent-100);
   color: var(--color-accent-900);
 }
+
+/* ── Print styles for health reports ─────────────────────────────────── */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  nav,
+  header {
+    display: none !important;
+  }
+  main {
+    background: white !important;
+    padding: 0 !important;
+  }
+  .report-content {
+    max-width: 100% !important;
+  }
+  .card {
+    border: none !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+  @page {
+    margin: 1.5cm 2cm;
+    size: A4 portrait;
+  }
+}

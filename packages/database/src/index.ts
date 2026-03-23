@@ -18,6 +18,7 @@ export {
   createMedication,
   updateMedication,
   logMedicationAdherence,
+  getAdherenceLogs,
 } from './queries/medications';
 export {
   createImportJob,

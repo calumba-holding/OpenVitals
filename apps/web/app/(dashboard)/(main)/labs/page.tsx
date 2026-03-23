@@ -7,7 +7,9 @@ import { MetricSummaryCard } from '@/components/health/metric-summary-card';
 import { AnimatedEmptyState } from '@/components/animated-empty-state';
 import { deriveStatus, formatRange } from '@/lib/health-utils';
 import { formatDate, formatObsValue, isDurationMetric } from '@/lib/utils';
-import { TestTubes, Droplets, Activity, Microscope, FlaskConical, Dna } from 'lucide-react';
+import { TestTubes, Droplets, Activity, Microscope, FlaskConical, Dna, Download } from 'lucide-react';
+import { Button } from '@/components/button';
+import { downloadCsv } from '@/lib/export';
 
 const emptyIcons = [TestTubes, Droplets, Activity, Microscope, FlaskConical, Dna];
 
@@ -110,7 +112,34 @@ export default function LabsPage() {
 
   return (
     <div className="stagger-children">
-      <TitleActionHeader title="Lab Results" subtitle={subtitle} />
+      <TitleActionHeader
+        title="Lab Results"
+        subtitle={subtitle}
+        actions={
+          <Button
+            variant="outline-subtle"
+            size="sm"
+            icon={<Download />}
+            text="Export CSV"
+            onClick={() => {
+              downloadCsv(
+                'openvitals-labs',
+                ['Metric', 'Value', 'Unit', 'Reference Low', 'Reference High', 'Abnormal', 'Date', 'Category'],
+                items.map((o) => [
+                  o.metricCode,
+                  o.valueNumeric ?? o.valueText,
+                  o.unit,
+                  o.referenceRangeLow,
+                  o.referenceRangeHigh,
+                  o.isAbnormal ? 'Yes' : 'No',
+                  new Date(o.observedAt).toISOString().split('T')[0],
+                  o.category,
+                ]),
+              );
+            }}
+          />
+        }
+      />
 
       {/* Top metric cards */}
       {topMetrics.length > 0 && (

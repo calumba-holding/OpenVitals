@@ -3,6 +3,10 @@
 import { Logo } from '@/assets/app/images/logo';
 import { ChatInput } from './chat-input';
 
+import { trpc } from '@/lib/trpc/client';
+import { deriveStatus } from '@/lib/health-utils';
+import { useMemo } from 'react';
+
 interface InitialViewProps {
   input: string;
   onInputChange: (value: string) => void;
@@ -17,14 +21,68 @@ function getGreeting(): string {
   return 'Good evening';
 }
 
-const suggestions = [
-  'How have my lipid results changed this year?',
+const DEFAULT_SUGGESTIONS = [
   'Summarize my most recent lab results',
-  'Are any of my medications interacting?',
   'What trends should I discuss with my doctor?',
+  'Are any of my medications interacting?',
+  'How have my lipid results changed this year?',
 ];
 
 export function InitialView({ input, onInputChange, onSubmit, onSuggestionClick }: InitialViewProps) {
+  const observations = trpc.observations.list.useQuery({ limit: 200 });
+  const medications = trpc.medications.list.useQuery({});
+  const conditions = trpc.conditions.list.useQuery();
+
+  // Generate dynamic suggestions based on user data
+  const suggestions = useMemo(() => {
+    const dynamic: string[] = [];
+    const obsItems = observations.data?.items ?? [];
+    const medItems = medications.data?.items ?? [];
+    const condItems = conditions.data ?? [];
+
+    // Find abnormal metrics
+    const byMetric = new Map<string, typeof obsItems>();
+    for (const obs of obsItems) {
+      const existing = byMetric.get(obs.metricCode) ?? [];
+      existing.push(obs);
+      byMetric.set(obs.metricCode, existing);
+    }
+
+    const abnormalMetrics: string[] = [];
+    for (const [code, metricObs] of byMetric) {
+      const sorted = [...metricObs].sort(
+        (a, b) => new Date(b.observedAt).getTime() - new Date(a.observedAt).getTime(),
+      );
+      const status = deriveStatus(sorted[0]!);
+      if (status !== 'normal') {
+        abnormalMetrics.push(code.replace(/_/g, ' '));
+      }
+    }
+
+    if (abnormalMetrics.length > 0) {
+      dynamic.push(`Why is my ${abnormalMetrics[0]} flagged and what should I do?`);
+    }
+
+    if (medItems.length > 0 && obsItems.length > 0) {
+      dynamic.push('How might my medications be affecting my lab results?');
+    }
+
+    if (condItems.filter((c) => c.status === 'active').length > 0) {
+      const condName = condItems.find((c) => c.status === 'active')?.name;
+      if (condName) {
+        dynamic.push(`What lab markers should I monitor for ${condName}?`);
+      }
+    }
+
+    if (obsItems.length > 10) {
+      dynamic.push('Prepare a summary I can share with my doctor');
+    }
+
+    // Fill with defaults up to 4
+    const all = [...dynamic, ...DEFAULT_SUGGESTIONS];
+    return all.slice(0, 4);
+  }, [observations.data, medications.data, conditions.data]);
+
   return (
     <div className="flex h-full flex-col items-center justify-center px-6">
       <div className="w-full max-w-2xl">

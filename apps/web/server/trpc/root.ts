@@ -10,6 +10,8 @@ import { integrationsRouter } from "./routers/integrations";
 import { optimalRangesRouter } from "./routers/optimalRanges";
 import { feedbackRouter } from "./routers/feedback";
 import { testingRouter } from "./routers/testing";
+import { conditionsRouter } from "./routers/conditions";
+import { encountersRouter } from "./routers/encounters";
 
 export const appRouter = createRouter({
   observations: observationsRouter,
@@ -23,6 +25,8 @@ export const appRouter = createRouter({
   optimalRanges: optimalRangesRouter,
   feedback: feedbackRouter,
   testing: testingRouter,
+  conditions: conditionsRouter,
+  encounters: encountersRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -202,7 +202,7 @@ function ProviderCard({ provider }: { provider: Provider }) {
   const Icon = provider.icon;
   const hasBrandIcon = !!provider.brandIcon;
   return (
-    <div className="border border-neutral-200 bg-white p-4 transition-colors hover:border-neutral-900">
+    <div className="card p-4 transition-colors hover:border-neutral-900">
       <div className="flex items-start gap-3">
         <div className="w-9 h-9 flex items-center justify-center shrink-0 overflow-hidden border border-neutral-200">
           {hasBrandIcon ? (
@@ -357,7 +357,7 @@ export default function FeaturesIntegrationsPage() {
         <div className="mx-auto max-w-[1280px] px-6 md:px-10 py-14 lg:py-20">
           <CubeBadge className="mb-8">Security</CubeBadge>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 border border-neutral-200 bg-white">
+          <div className="grid grid-cols-1 md:grid-cols-3 card">
             {[
               {
                 title: "OAuth 2.0 everywhere",

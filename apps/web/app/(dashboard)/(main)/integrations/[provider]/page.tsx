@@ -8,44 +8,40 @@ import { MetricSummaryCard } from '@/components/health/metric-summary-card';
 import { DataTable, type DataTableColumn } from '@/components/data-table';
 import { deriveStatus, formatRange } from '@/lib/health-utils';
 import { cn, formatDate, formatObsValue, isDurationMetric, getRelativeTime } from '@/lib/utils';
+import { Avatar } from '@/components/avatar';
 import { Button } from '@/components/button';
 import { toast } from 'sonner';
 import {
   RefreshCw,
   Unplug,
   Zap,
-  Watch,
-  Activity,
-  CircleGauge,
-  CircleDot,
-  Heart,
-  Smartphone,
-  SquareActivity,
-  TestTubes,
-  FlaskConical,
-  FileHeart,
-  Hospital,
-  type LucideIcon,
 } from 'lucide-react';
 
-// Static catalog matching the integrations list page
-const providerCatalog: Record<
-  string,
-  { name: string; icon: LucideIcon; color: string; iconBg: string }
-> = {
-  'apple-watch': { name: 'Apple Watch', icon: Watch, color: 'text-rose-600', iconBg: 'bg-rose-50' },
-  fitbit: { name: 'Fitbit', icon: Activity, color: 'text-teal-600', iconBg: 'bg-teal-50' },
-  garmin: { name: 'Garmin', icon: CircleGauge, color: 'text-sky-600', iconBg: 'bg-sky-50' },
-  'oura-ring': { name: 'Oura Ring', icon: CircleDot, color: 'text-violet-600', iconBg: 'bg-violet-50' },
-  whoop: { name: 'Whoop', icon: Zap, color: 'text-amber-600', iconBg: 'bg-amber-50' },
-  'samsung-galaxy-watch': { name: 'Samsung Galaxy Watch', icon: Watch, color: 'text-indigo-600', iconBg: 'bg-indigo-50' },
-  'apple-health': { name: 'Apple Health', icon: Heart, color: 'text-pink-600', iconBg: 'bg-pink-50' },
-  'google-health-connect': { name: 'Google Health Connect', icon: Smartphone, color: 'text-emerald-600', iconBg: 'bg-emerald-50' },
-  'samsung-health': { name: 'Samsung Health', icon: SquareActivity, color: 'text-blue-600', iconBg: 'bg-blue-50' },
-  'quest-diagnostics': { name: 'Quest Diagnostics', icon: TestTubes, color: 'text-orange-600', iconBg: 'bg-orange-50' },
-  labcorp: { name: 'Labcorp', icon: FlaskConical, color: 'text-cyan-600', iconBg: 'bg-cyan-50' },
-  'epic-mychart': { name: 'Epic MyChart', icon: FileHeart, color: 'text-fuchsia-600', iconBg: 'bg-fuchsia-50' },
-  cerner: { name: 'Cerner', icon: Hospital, color: 'text-slate-600', iconBg: 'bg-slate-100' },
+import whoopIcon from '@/assets/marketing/brand-logos/whoop-icon.jpeg';
+import appleIcon from '@/assets/marketing/brand-logos/apple-icon.png';
+import fitbitIcon from '@/assets/marketing/brand-logos/fitbit-icon.png';
+import garminIcon from '@/assets/marketing/brand-logos/garmin-icon.jpeg';
+import ouraIcon from '@/assets/marketing/brand-logos/oura-icon.jpeg';
+import samsungIcon from '@/assets/marketing/brand-logos/samsung-icon.png';
+import questIcon from '@/assets/marketing/brand-logos/quest-icon.png';
+import labcorpIcon from '@/assets/marketing/brand-logos/labcorp-icon.png';
+import epicIcon from '@/assets/marketing/brand-logos/epic-icon.png';
+import cernerIcon from '@/assets/marketing/brand-logos/cerner-icon.png';
+
+const providerCatalog: Record<string, { name: string; brandIconSrc?: string }> = {
+  'apple-watch': { name: 'Apple Watch', brandIconSrc: appleIcon.src },
+  fitbit: { name: 'Fitbit', brandIconSrc: fitbitIcon.src },
+  garmin: { name: 'Garmin', brandIconSrc: garminIcon.src },
+  'oura-ring': { name: 'Oura Ring', brandIconSrc: ouraIcon.src },
+  whoop: { name: 'Whoop', brandIconSrc: whoopIcon.src },
+  'samsung-galaxy-watch': { name: 'Samsung Galaxy Watch', brandIconSrc: samsungIcon.src },
+  'apple-health': { name: 'Apple Health', brandIconSrc: appleIcon.src },
+  'google-health-connect': { name: 'Google Health Connect' },
+  'samsung-health': { name: 'Samsung Health', brandIconSrc: samsungIcon.src },
+  'quest-diagnostics': { name: 'Quest Diagnostics', brandIconSrc: questIcon.src },
+  labcorp: { name: 'Labcorp', brandIconSrc: labcorpIcon.src },
+  'epic-mychart': { name: 'Epic MyChart', brandIconSrc: epicIcon.src },
+  cerner: { name: 'Cerner', brandIconSrc: cernerIcon.src },
 };
 
 function formatMetricName(code: string) {
@@ -121,7 +117,14 @@ export default function IntegrationDetailPage({
 
   const catalog = providerCatalog[provider];
   const providerName = catalog?.name ?? formatMetricName(provider);
-  const ProviderIcon = catalog?.icon ?? Zap;
+
+  const providerAvatar = (size: string = 'size-10') => (
+    <Avatar
+      src={catalog?.brandIconSrc ?? null}
+      name={providerName}
+      className={cn(size, 'rounded-xl shrink-0')}
+    />
+  );
 
   const connection = data?.connection ?? null;
   const observations = (data?.observations ?? []) as Observation[];
@@ -298,13 +301,7 @@ export default function IntegrationDetailPage({
         <TitleActionHeader
           showBackButton
           title={providerName}
-          beforeTitle={
-            catalog ? (
-              <div className={`w-10 h-10 rounded-xl ${catalog.iconBg} flex items-center justify-center shrink-0 mt-1`}>
-                <ProviderIcon className={`h-5 w-5 ${catalog.color}`} />
-              </div>
-            ) : undefined
-          }
+          beforeTitle={<div className="mt-1">{providerAvatar()}</div>}
           underTitle={
             <div className="mt-2">
               <StatusBadge status="neutral" label="Disconnected" />
@@ -336,16 +333,10 @@ export default function IntegrationDetailPage({
         <TitleActionHeader
           showBackButton
           title={providerName}
-          beforeTitle={
-            catalog ? (
-              <div className={`w-10 h-10 rounded-xl ${catalog.iconBg} flex items-center justify-center shrink-0 mt-1`}>
-                <ProviderIcon className={`h-5 w-5 ${catalog.color}`} />
-              </div>
-            ) : undefined
-          }
+          beforeTitle={<div className="mt-1">{providerAvatar()}</div>}
         />
         <div className="mt-10 flex flex-col items-center justify-center text-center py-12">
-          <ProviderIcon className="h-10 w-10 text-neutral-300 mb-4" />
+          <div className="mb-4">{providerAvatar('size-12')}</div>
           <h2 className="text-lg font-semibold text-neutral-700 font-display">Not Connected</h2>
           <p className="mt-1 text-sm text-neutral-500 max-w-md">
             Connect {providerName} to start syncing your health data.
@@ -367,13 +358,7 @@ export default function IntegrationDetailPage({
       <TitleActionHeader
         showBackButton
         title={providerName}
-        beforeTitle={
-          catalog ? (
-            <div className={`w-10 h-10 rounded-xl ${catalog.iconBg} flex items-center justify-center shrink-0 mt-1`}>
-              <ProviderIcon className={`h-5 w-5 ${catalog.color}`} />
-            </div>
-          ) : undefined
-        }
+        beforeTitle={<div className="mt-1">{providerAvatar()}</div>}
         underTitle={
           <div className="mt-2">
             <StatusBadge status="normal" label="Connected" />

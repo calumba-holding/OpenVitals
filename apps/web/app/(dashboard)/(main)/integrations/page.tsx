@@ -10,6 +10,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { TitleActionHeader } from "@/components/title-action-header";
+import { PillTabs, type PillTabItem } from "@/components/pill-tabs";
 import { Avatar } from "@/components/avatar";
 import { cn, getRelativeTime } from "@/lib/utils";
 import { trpc } from "@/lib/trpc/client";
@@ -43,13 +44,13 @@ interface IntegrationDef {
   dataTypes: string[];
 }
 
-const tabs: { key: FilterTab; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "connected", label: "Connected" },
-  { key: "wearables", label: "Wearables" },
-  { key: "health_platforms", label: "Health Platforms" },
-  { key: "lab_services", label: "Lab Services" },
-  { key: "medical_records", label: "Medical Records" },
+const tabDefs: { id: FilterTab; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "connected", label: "Connected" },
+  { id: "wearables", label: "Wearables" },
+  { id: "health_platforms", label: "Health Platforms" },
+  { id: "lab_services", label: "Lab Services" },
+  { id: "medical_records", label: "Medical Records" },
 ];
 
 // Providers that have a real backend implementation
@@ -236,7 +237,7 @@ function IntegrationCard({
   );
 
   return (
-    <div className="card-elevated flex flex-col">
+    <div className="card-elevated card flex flex-col">
       {isConnected ? (
         <Link
           href={`/integrations/${integration.id}`}
@@ -454,22 +455,19 @@ export default function IntegrationsPage() {
       />
 
       <div className="mt-4 overflow-x-auto scrollbar-none -mx-3 px-3">
-        <div className="pill-tabs">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`pill-tab ${activeTab === tab.key ? "pill-tab-active" : ""}`}
-            >
-              {tab.label}
-              {tab.key === "connected" && (
-                <span className="ml-1.5 text-[11px] text-neutral-400">
+        <PillTabs<FilterTab>
+          items={tabDefs.map((t) => ({
+            ...t,
+            right:
+              t.id === "connected" && connectedCount > 0 ? (
+                <span className="ml-1 text-[11px] opacity-60">
                   {connectedCount}
                 </span>
-              )}
-            </button>
-          ))}
-        </div>
+              ) : undefined,
+          }))}
+          value={activeTab}
+          onChange={setActiveTab}
+        />
       </div>
 
       {activeIntegrations.length > 0 && (

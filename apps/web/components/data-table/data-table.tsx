@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import { cn } from '@/lib/utils';
-import { type DataTableProps } from './types';
-import { DataTableHeader } from './data-table-header';
-import { DataTableRow } from './data-table-row';
-import { DataTableSearch } from './data-table-search';
-import { DataTableSkeleton } from './data-table-skeleton';
-import { DataTableEmpty } from './data-table-empty';
-import { DataTablePagination } from './data-table-pagination';
+import { useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
+import { type DataTableProps } from "./types";
+import { DataTableHeader } from "./data-table-header";
+import { DataTableRow } from "./data-table-row";
+import { DataTableSearch } from "./data-table-search";
+import { DataTableSkeleton } from "./data-table-skeleton";
+import { DataTableEmpty } from "./data-table-empty";
+import { DataTablePagination } from "./data-table-pagination";
 
 export function DataTable<T>({
   data,
@@ -22,14 +22,14 @@ export function DataTable<T>({
   className,
   showHeader = true,
   hasActionColumn,
-  actionColumnWidth = 'auto',
+  actionColumnWidth = "auto",
 }: DataTableProps<T>) {
   const [expandedKeys, setExpandedKeys] = useState<Set<string | number>>(
     new Set(),
   );
 
   const gridTemplateColumns = useMemo(() => {
-    const cols = columns.map((c) => c.width ?? '1fr').join(' ');
+    const cols = columns.map((c) => c.width ?? "1fr").join(" ");
     return hasActionColumn ? `${cols} ${actionColumnWidth}` : cols;
   }, [columns, hasActionColumn, actionColumnWidth]);
 
@@ -49,12 +49,7 @@ export function DataTable<T>({
   const showSkeleton = loading && data.length === 0;
 
   return (
-    <div
-      className={cn(
-        'overflow-hidden border border-neutral-200 bg-white',
-        className,
-      )}
-    >
+    <div className={cn("overflow-hidden card", className)}>
       {search && (
         <DataTableSearch
           value={search.value}

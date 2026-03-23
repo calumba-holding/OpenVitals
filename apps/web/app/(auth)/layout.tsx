@@ -1,11 +1,21 @@
+import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import Link from 'next/link';
+import { auth } from '@/server/auth';
 import { LogoWordmark } from '@/assets/app/images/logo';
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (session) {
+    redirect('/home');
+  }
   return (
     <div className="flex min-h-screen">
       {/* Brand panel */}
