@@ -156,12 +156,8 @@ export function Nav() {
           <Link href="/register" onClick={close}>
             <Button text="Get started" variant="default" size="sm" />
           </Link>
-          <Link
-            href="/login"
-            className="font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-neutral-500 hover:text-neutral-900 transition-colors"
-            onClick={close}
-          >
-            Log in
+          <Link href="/login" onClick={close}>
+            <Button text="Log in" variant="ghost" size="sm" />
           </Link>
         </div>
       </div>

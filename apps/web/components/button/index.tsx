@@ -1,41 +1,38 @@
 "use client";
 
-import type React from 'react';
-import type { ReactNode } from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
-import { Tooltip } from '@/components/tooltip';
+import type React from "react";
+import type { ReactNode } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
+import { Tooltip } from "@/components/tooltip";
 import {
   Button as ButtonPrimitive,
   buttonVariants,
-} from '@/components/ui/button';
+} from "@/components/ui/button";
 
 const iconButtonVariants = cva(
   "cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2",
   {
     variants: {
       variant: {
-        default:
-          'bg-neutral-900 text-white hover:bg-neutral-800',
+        default: "bg-neutral-900 text-white hover:bg-neutral-800",
         outline:
-          'border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700',
-        secondary:
-          'bg-neutral-100 text-neutral-700 hover:bg-neutral-200',
+          "border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700",
+        secondary: "bg-neutral-100 text-neutral-700 hover:bg-neutral-200",
         ghost:
-          'hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 border-transparent',
-        destructive:
-          'bg-destructive text-white hover:bg-destructive/90',
+          "hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 border-transparent",
+        destructive: "bg-destructive text-white hover:bg-destructive/90",
       },
       size: {
-        xs: 'h-7 w-7 p-1',
-        sm: 'h-8 w-8 gap-2',
-        default: 'h-9 w-9 gap-2',
-        lg: 'h-10 w-10 gap-2',
+        xs: "h-7 w-7 p-1",
+        sm: "h-8 w-8 gap-2",
+        default: "h-9 w-9 gap-2",
+        lg: "h-10 w-10 gap-2",
       },
     },
     defaultVariants: {
-      variant: 'ghost',
-      size: 'default',
+      variant: "ghost",
+      size: "default",
     },
   },
 );
@@ -60,7 +57,7 @@ function Spinner() {
   );
 }
 
-export type ButtonProps = React.ComponentProps<'button'> &
+export type ButtonProps = React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     text?: ReactNode | string;
     textWrapperClassName?: string;
@@ -89,12 +86,12 @@ function Button({
 }: ButtonProps) {
   const button = (
     <button
-      type={props.onClick ? 'button' : 'submit'}
+      type={props.onClick ? "button" : "submit"}
       className={cn(
-        'group flex items-center justify-center whitespace-nowrap',
+        "group flex items-center justify-center whitespace-nowrap",
         buttonVariants({ variant, size }),
         (props.disabled || loading) &&
-          'opacity-50 cursor-not-allowed pointer-events-none',
+          "opacity-50 cursor-not-allowed pointer-events-none",
         className,
       )}
       disabled={props.disabled || loading}
@@ -103,10 +100,7 @@ function Button({
       {loading ? <Spinner /> : icon ? icon : null}
       {text && (
         <span
-          className={cn(
-            'min-w-0 truncate font-medium',
-            textWrapperClassName,
-          )}
+          className={cn("min-w-0 truncate font-semibold", textWrapperClassName)}
         >
           {text}
         </span>
@@ -135,7 +129,7 @@ function Button({
   return button;
 }
 
-export type IconButtonProps = React.ComponentProps<'button'> &
+export type IconButtonProps = React.ComponentProps<"button"> &
   VariantProps<typeof iconButtonVariants> & {
     icon?: ReactNode;
     loading?: boolean;
@@ -155,11 +149,11 @@ function IconButton({
 }: IconButtonProps) {
   const button = (
     <button
-      type={props.onClick ? 'button' : 'submit'}
+      type={props.onClick ? "button" : "submit"}
       className={cn(
         iconButtonVariants({ variant, size }),
         (props.disabled || loading) &&
-          'opacity-50 cursor-not-allowed pointer-events-none',
+          "opacity-50 cursor-not-allowed pointer-events-none",
         className,
       )}
       disabled={props.disabled || loading}
