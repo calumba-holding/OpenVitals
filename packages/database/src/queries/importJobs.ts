@@ -1,6 +1,7 @@
-import { and, desc, eq, type SQL } from 'drizzle-orm';
-import { sourceArtifacts, importJobs } from '../schema/sources';
-import type { Database } from '../client';
+import { and, desc, eq, inArray, type SQL } from "drizzle-orm";
+import { sourceArtifacts, importJobs } from "../schema/sources";
+import { observations } from "../schema/observations";
+import type { Database } from "../client";
 
 export async function createImportJob(
   db: Database,
@@ -33,7 +34,7 @@ export async function createImportJob(
       .values({
         userId: params.userId,
         sourceArtifactId: artifact!.id,
-        status: 'pending',
+        status: "pending",
       })
       .returning();
 
@@ -51,7 +52,9 @@ export async function getImportJobStatus(
   const rows = await db
     .select()
     .from(importJobs)
-    .where(and(eq(importJobs.id, params.id), eq(importJobs.userId, params.userId)))
+    .where(
+      and(eq(importJobs.id, params.id), eq(importJobs.userId, params.userId)),
+    )
     .limit(1);
 
   return rows[0] ?? null;
@@ -85,7 +88,10 @@ export async function listImportJobs(
       fileSize: sourceArtifacts.fileSize,
     })
     .from(importJobs)
-    .innerJoin(sourceArtifacts, eq(importJobs.sourceArtifactId, sourceArtifacts.id))
+    .innerJoin(
+      sourceArtifacts,
+      eq(importJobs.sourceArtifactId, sourceArtifacts.id),
+    )
     .where(and(...conditions))
     .orderBy(desc(importJobs.createdAt))
     .limit(params.limit ?? 20);
@@ -100,8 +106,13 @@ export async function deleteImportJob(
 ) {
   const rows = await db
     .delete(importJobs)
-    .where(and(eq(importJobs.id, params.id), eq(importJobs.userId, params.userId)))
-    .returning({ id: importJobs.id, sourceArtifactId: importJobs.sourceArtifactId });
+    .where(
+      and(eq(importJobs.id, params.id), eq(importJobs.userId, params.userId)),
+    )
+    .returning({
+      id: importJobs.id,
+      sourceArtifactId: importJobs.sourceArtifactId,
+    });
 
   if (rows[0]) {
     await db
@@ -131,7 +142,66 @@ export async function getReviewQueue(
       mimeType: sourceArtifacts.mimeType,
     })
     .from(importJobs)
-    .innerJoin(sourceArtifacts, eq(importJobs.sourceArtifactId, sourceArtifacts.id))
-    .where(and(eq(importJobs.userId, params.userId), eq(importJobs.needsReview, true)))
+    .innerJoin(
+      sourceArtifacts,
+      eq(importJobs.sourceArtifactId, sourceArtifacts.id),
+    )
+    .where(
+      and(
+        eq(importJobs.userId, params.userId),
+        eq(importJobs.needsReview, true),
+      ),
+    )
     .orderBy(desc(importJobs.createdAt));
+}
+
+export async function resetImportJobsForReprocessing(
+  db: Database,
+  params: {
+    userId: string;
+  },
+) {
+  return db.transaction(async (tx) => {
+    // Find all import jobs for this user that have been processed
+    const jobs = await tx
+      .select({
+        id: importJobs.id,
+        sourceArtifactId: importJobs.sourceArtifactId,
+      })
+      .from(importJobs)
+      .where(eq(importJobs.userId, params.userId));
+
+    if (jobs.length === 0) return { count: 0 };
+
+    const jobIds = jobs.map((j) => j.id);
+
+    // Delete all observations linked to these import jobs
+    await tx
+      .delete(observations)
+      .where(inArray(observations.importJobId, jobIds));
+
+    // Reset all import jobs to pending
+    await tx
+      .update(importJobs)
+      .set({
+        status: "pending",
+        classifiedType: null,
+        classificationConfidence: null,
+        parserId: null,
+        parserVersion: null,
+        extractionCount: 0,
+        needsReview: false,
+        errorMessage: null,
+        errorDetailJson: null,
+        startedAt: null,
+        classifyCompletedAt: null,
+        parseCompletedAt: null,
+        normalizeCompletedAt: null,
+        completedAt: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(importJobs.userId, params.userId));
+
+    return { count: jobs.length, jobs };
+  });
 }

@@ -1,8 +1,8 @@
 // Schema
-export * from './schema/index';
+export * from "./schema/index";
 
 // Client
-export { getDb, type Database } from './client';
+export { getDb, type Database } from "./client";
 
 // Queries
 export {
@@ -10,23 +10,24 @@ export {
   listObservationsByImportJob,
   getObservationTrend,
   getObservationWithProvenance,
-} from './queries/observations';
-export { checkCategoryAccess, getActiveGrants } from './queries/sharing';
-export { matchAlias, convertUnit } from './queries/metrics';
+} from "./queries/observations";
+export { checkCategoryAccess, getActiveGrants } from "./queries/sharing";
+export { matchAlias, convertUnit } from "./queries/metrics";
 export {
   listMedications,
   createMedication,
   updateMedication,
   logMedicationAdherence,
   getAdherenceLogs,
-} from './queries/medications';
+} from "./queries/medications";
 export {
   createImportJob,
   getImportJobStatus,
   listImportJobs,
   deleteImportJob,
   getReviewQueue,
-} from './queries/importJobs';
+  resetImportJobsForReprocessing,
+} from "./queries/importJobs";
 export {
   listConnections,
   getConnectionByProvider,
@@ -36,4 +37,4 @@ export {
   updateConnectionTokens,
   updateSyncStatus,
   ensureDataSource,
-} from './queries/integrations';
+} from "./queries/integrations";

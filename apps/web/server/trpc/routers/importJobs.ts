@@ -1,18 +1,28 @@
-import { z } from 'zod';
-import { TRPCError } from '@trpc/server';
-import { createRouter, protectedProcedure } from '../init';
-import { createImportJob, getImportJobStatus, listImportJobs, deleteImportJob, getReviewQueue, listObservationsByImportJob } from '@openvitals/database';
+import { z } from "zod";
+import { TRPCError } from "@trpc/server";
+import { createRouter, protectedProcedure } from "../init";
+import {
+  createImportJob,
+  getImportJobStatus,
+  listImportJobs,
+  deleteImportJob,
+  getReviewQueue,
+  listObservationsByImportJob,
+  resetImportJobsForReprocessing,
+} from "@openvitals/database";
 
 export const importJobsRouter = createRouter({
   create: protectedProcedure
-    .input(z.object({
-      fileName: z.string(),
-      mimeType: z.string(),
-      blobPath: z.string(),
-      contentHash: z.string(),
-      fileSize: z.number(),
-      dataSourceId: z.string().uuid().optional(),
-    }))
+    .input(
+      z.object({
+        fileName: z.string(),
+        mimeType: z.string(),
+        blobPath: z.string(),
+        contentHash: z.string(),
+        fileSize: z.number(),
+        dataSourceId: z.string().uuid().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const result = await createImportJob(ctx.db, {
         userId: ctx.userId,
@@ -25,13 +35,15 @@ export const importJobsRouter = createRouter({
       });
 
       // Trigger ingestion worker
-      const workerUrl = process.env.RENDER_WORKER_URL ?? 'http://localhost:4000';
-      const webhookSecret = process.env.RENDER_WEBHOOK_SECRET ?? 'dev-secret-change-me';
+      const workerUrl =
+        process.env.RENDER_WORKER_URL ?? "http://localhost:4000";
+      const webhookSecret =
+        process.env.RENDER_WEBHOOK_SECRET ?? "dev-secret-change-me";
       fetch(`${workerUrl}/api/workflows/trigger`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${webhookSecret}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${webhookSecret}`,
         },
         body: JSON.stringify({
           importJobId: result.importJobId,
@@ -39,7 +51,10 @@ export const importJobsRouter = createRouter({
           userId: ctx.userId,
         }),
       }).catch((err) => {
-        console.error('[importJobs.create] Failed to trigger worker:', err.message);
+        console.error(
+          "[importJobs.create] Failed to trigger worker:",
+          err.message,
+        );
       });
 
       return { importJobId: result.importJobId };
@@ -54,7 +69,10 @@ export const importJobsRouter = createRouter({
       });
 
       if (!job) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Import job not found' });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Import job not found",
+        });
       }
 
       return {
@@ -70,10 +88,12 @@ export const importJobsRouter = createRouter({
     }),
 
   list: protectedProcedure
-    .input(z.object({
-      limit: z.number().min(1).max(50).default(20),
-      status: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(20),
+        status: z.string().optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const items = await listImportJobs(ctx.db, {
         userId: ctx.userId,
@@ -91,7 +111,10 @@ export const importJobsRouter = createRouter({
         userId: ctx.userId,
       });
       if (!job) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Import job not found' });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Import job not found",
+        });
       }
       const observations = await listObservationsByImportJob(ctx.db, {
         importJobId: input.id,
@@ -108,14 +131,53 @@ export const importJobsRouter = createRouter({
         userId: ctx.userId,
       });
       if (!deleted) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Import job not found' });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Import job not found",
+        });
       }
       return { success: true };
     }),
 
-  reviewQueue: protectedProcedure
-    .query(async ({ ctx }) => {
-      const items = await getReviewQueue(ctx.db, { userId: ctx.userId });
-      return { items };
-    }),
+  reviewQueue: protectedProcedure.query(async ({ ctx }) => {
+    const items = await getReviewQueue(ctx.db, { userId: ctx.userId });
+    return { items };
+  }),
+
+  reprocessAll: protectedProcedure.mutation(async ({ ctx }) => {
+    const result = await resetImportJobsForReprocessing(ctx.db, {
+      userId: ctx.userId,
+    });
+
+    if (result.count === 0) {
+      return { count: 0 };
+    }
+
+    // Trigger worker for each reset job
+    const workerUrl = process.env.RENDER_WORKER_URL ?? "http://localhost:4000";
+    const webhookSecret =
+      process.env.RENDER_WEBHOOK_SECRET ?? "dev-secret-change-me";
+
+    for (const job of result.jobs!) {
+      fetch(`${workerUrl}/api/workflows/trigger`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${webhookSecret}`,
+        },
+        body: JSON.stringify({
+          importJobId: job.id,
+          artifactId: job.sourceArtifactId,
+          userId: ctx.userId,
+        }),
+      }).catch((err) => {
+        console.error(
+          `[importJobs.reprocessAll] Failed to trigger worker for job=${job.id}:`,
+          err.message,
+        );
+      });
+    }
+
+    return { count: result.count };
+  }),
 });
