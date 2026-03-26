@@ -12,6 +12,129 @@ export function CornerCross({ className }: { className?: string }) {
     </svg>
   );
 }
+
+type Location = "tl" | "tr" | "bl" | "br" | "*";
+
+export function CornerEdge({
+  location,
+  length = 6,
+  width = 1.5,
+  className,
+}: {
+  location: Location;
+  length?: number;
+  width?: number;
+  className?: string;
+}) {
+  if (location === "tl") {
+    return (
+      <>
+        <span
+          style={{
+            height: width,
+            width: length,
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+          className={cn("bg-accent-500", className)}
+        />
+        <span
+          style={{
+            height: length,
+            width: width,
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+          className={cn("bg-accent-500", className)}
+        />
+      </>
+    );
+  }
+  if (location === "tr") {
+    return (
+      <>
+        <span
+          style={{
+            height: width,
+            width: length,
+            position: "absolute",
+            top: 0,
+            right: 0,
+          }}
+          className={cn("bg-accent-500", className)}
+        />
+        <span
+          style={{
+            height: length,
+            width: width,
+            position: "absolute",
+            top: 0,
+            right: 0,
+          }}
+          className={cn("bg-accent-500", className)}
+        />
+      </>
+    );
+  }
+  if (location === "bl") {
+    return (
+      <>
+        <span
+          style={{
+            height: width,
+            width: length,
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+          }}
+          className={cn("bg-accent-500", className)}
+        />
+        <span
+          style={{
+            height: length,
+            width: width,
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+          }}
+          className={cn("bg-accent-500", className)}
+        />
+      </>
+    );
+  }
+  if (location === "br") {
+    return (
+      <>
+        <span
+          style={{
+            height: width,
+            width: length,
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+          }}
+          className={cn("bg-accent-500", className)}
+        />
+        <span
+          style={{
+            height: length,
+            width: width,
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+          }}
+          className={cn("bg-accent-500", className)}
+        />
+      </>
+    );
+  }
+
+  return (["tl", "tr", "bl", "br"] as const).map((s) => (
+    <CornerEdge location={s} />
+  ));
+}
 export function CornerCrosses({
   cornerCrossClassName,
 }: {

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/auth/client";
 import { LogoWordmark } from "@/assets/app/images/logo";
 import { toast } from "sonner";
-
+import { Button } from "@/components/button";
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -106,14 +106,11 @@ export default function RegisterPage() {
           />
         </div>
 
-        <button
+        <Button
           type="submit"
-          disabled={loading}
-          className="w-full rounded-lg py-2.5 text-[14px] font-medium text-white transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm"
-          style={{ background: "linear-gradient(135deg, #3162FF, #2750D9)" }}
-        >
-          {loading ? "Creating account..." : "Create account"}
-        </button>
+          text={loading ? "Creating account..." : "Create account"}
+          loading={loading}
+        />
       </form>
 
       <p className="mt-4 text-center text-[11px] leading-relaxed text-neutral-400 font-body">

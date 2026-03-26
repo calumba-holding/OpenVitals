@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth/client";
 import { LogoWordmark } from "@/assets/app/images/logo";
 import { toast } from "sonner";
+import { Button } from "@/components/button";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -83,14 +84,7 @@ export default function LoginPage() {
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-lg py-2.5 text-[14px] font-medium text-white transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm"
-          style={{ background: "linear-gradient(135deg, #3162FF, #2750D9)" }}
-        >
-          {loading ? "Logging in..." : "Log in"}
-        </button>
+        <Button text={loading ? "Logging in..." : "Log in"} loading={loading} />
       </form>
 
       {/* Divider */}

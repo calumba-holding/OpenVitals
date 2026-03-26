@@ -11,7 +11,6 @@ import { CATEGORY_META, CATEGORY_ORDER } from "@/lib/biomarker-categories";
 import {
   Search,
   ChevronDown,
-  ChevronRight,
   ListChecks,
   Dna,
   Activity,
@@ -19,6 +18,7 @@ import {
   FlaskConical,
   Microscope,
 } from "lucide-react";
+import { StyledIcon } from "@/components/styled-icon";
 
 const emptyIcons = [
   ListChecks,
@@ -272,11 +272,13 @@ export default function BiomarkersPage() {
                     <button
                       type="button"
                       onClick={() => toggleCategory(cat)}
-                      className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-neutral-50"
+                      className="group flex w-full cursor-pointer items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-neutral-50"
                     >
-                      <div className="flex size-8 items-center justify-center rounded-lg bg-neutral-100">
-                        <IconComponent className="size-4 text-neutral-500" />
-                      </div>
+                      <StyledIcon
+                        icon={IconComponent}
+                        className="group-hover:bg-accent-100 transition-colors"
+                      />
+
                       <div className="flex-1">
                         <div className="text-[15px] font-semibold text-neutral-900 font-body">
                           {label}
@@ -294,8 +296,15 @@ export default function BiomarkersPage() {
                       />
                     </button>
 
-                    {!isCategoryCollapsed && (
-                      <>
+                    <div
+                      className={cn(
+                        "grid transition-[grid-template-rows] duration-200 ease-in-out",
+                        isCategoryCollapsed
+                          ? "grid-rows-[0fr]"
+                          : "grid-rows-[1fr]",
+                      )}
+                    >
+                      <div className="overflow-hidden">
                         {/* Header row */}
                         <div className="grid grid-cols-[1.6fr_1fr_1.4fr_0.8fr] gap-3 border-t border-b border-neutral-200 bg-neutral-50 px-5 py-2.5">
                           {["Metric", "Unit", "Default Range", "Aliases"].map(
@@ -486,8 +495,8 @@ export default function BiomarkersPage() {
                             </div>
                           );
                         })}
-                      </>
-                    )}
+                      </div>
+                    </div>
                   </div>
                 );
               })}
