@@ -3,9 +3,12 @@ import { cn } from "@/lib/utils";
 import { GITHUB_URL } from "@/constants/app";
 import { Logo } from "@/assets/app/images/logo";
 import { Spark } from "../components/spark";
-import { CornerCrossBadge } from "@/components/decorations/corner-cross";
+import {
+  CornerCrossBadge,
+  CornerEdge,
+} from "@/components/decorations/corner-cross";
 import { Button } from "@/components/button";
-import { CubeBadge } from "@/components/decorations/dot-badge";
+import { CornerBadge, CubeBadge } from "@/components/decorations/dot-badge";
 import { BrowserWindow } from "../../components/browser-window";
 
 /* ------------------------------------------------------------------ */
@@ -447,8 +450,8 @@ export function Hero() {
         <div className="z-10 col-span-full flex flex-col justify-between lg:col-span-1 lg:max-w-none">
           <div className="flex flex-col gap-y-6 lg:gap-y-8">
             {/* Section label */}
-            <div className="flex">
-              <CubeBadge border>Open Source</CubeBadge>
+            <div className="flex gap-2">
+              <CornerBadge size="lg">Open Source</CornerBadge>
             </div>
 
             {/* Headline */}
