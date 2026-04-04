@@ -336,6 +336,7 @@ export default function IntegrationDetailPage({
 
   // Disconnected state (connection exists but inactive)
   if (connection && !isConnected) {
+    const isImportBased = importBasedProviders.has(provider);
     return (
       <div>
         <TitleActionHeader
@@ -359,9 +360,11 @@ export default function IntegrationDetailPage({
           </p>
           <Button
             className="mt-6"
-            text="Reconnect"
+            text={isImportBased ? "Re-import Data" : "Reconnect"}
             onClick={() => {
-              window.location.href = `/api/integrations/${provider}/connect`;
+              window.location.href = isImportBased
+                ? `/integrations/${provider}/import`
+                : `/api/integrations/${provider}/connect`;
             }}
           />
         </div>

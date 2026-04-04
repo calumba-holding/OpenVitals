@@ -110,13 +110,22 @@ export default function AppleHealthImportPage() {
         return;
       }
 
+      const MAX_UPLOAD_BYTES = 50 * 1024 * 1024; // 50 MB – match server limit
+      if (file.size > MAX_UPLOAD_BYTES) {
+        setError(
+          `File is too large (${(file.size / 1024 / 1024).toFixed(0)} MB). The maximum upload size is 50 MB. Try exporting a shorter date range from Apple Health.`,
+        );
+        return;
+      }
+
       setError("");
       setPhase("uploading");
       setUploadProgress(0);
 
+      let progressInterval: ReturnType<typeof setInterval> | undefined;
       try {
         // Simulate upload progress (fetch doesn't provide upload progress natively)
-        const progressInterval = setInterval(() => {
+        progressInterval = setInterval(() => {
           setUploadProgress((prev) => Math.min(prev + 8, 90));
         }, 300);
 
@@ -151,6 +160,7 @@ export default function AppleHealthImportPage() {
         setImportJobId(jobId);
         setPhase("processing");
       } catch (err) {
+        clearInterval(progressInterval);
         setError(err instanceof Error ? err.message : "Upload failed");
         setPhase("instructions");
       }
