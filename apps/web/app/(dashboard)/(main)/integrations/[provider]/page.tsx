@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useMemo } from "react";
+import { use, useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc/client";
 import { TitleActionHeader } from "@/components/title-action-header";
 import {
@@ -123,8 +123,14 @@ export default function IntegrationDetailPage({
   params: Promise<{ provider: string }>;
 }) {
   const { provider } = use(params);
+  const PAGE_SIZE = 50;
+  const [page, setPage] = useState(1);
 
-  const { data, isLoading } = trpc.integrations.detail.useQuery({ provider });
+  const { data, isLoading } = trpc.integrations.detail.useQuery({
+    provider,
+    page,
+    pageSize: PAGE_SIZE,
+  });
   const { data: metricsData } = trpc.metrics.list.useQuery();
   const precisionMap = useMemo(() => {
     const map = new Map<string, number | null>();
@@ -150,6 +156,7 @@ export default function IntegrationDetailPage({
 
   const connection = data?.connection ?? null;
   const observations = (data?.observations ?? []) as Observation[];
+  const totalObservations = data?.totalObservations ?? 0;
   const isConnected = connection?.isActive ?? false;
 
   // Group observations by metricCode for metric cards
@@ -202,12 +209,6 @@ export default function IntegrationDetailPage({
           new Date(a.latest.observedAt).getTime(),
       );
   }, [observations]);
-
-  // Recent observations for table (limit 50)
-  const recentObservations = useMemo(
-    () => observations.slice(0, 50),
-    [observations],
-  );
 
   const tableColumns: DataTableColumn<Observation>[] = useMemo(
     () => [
@@ -455,7 +456,7 @@ export default function IntegrationDetailPage({
         />
         <SummaryCard
           label="Observations"
-          value={String(observations.length)}
+          value={String(totalObservations)}
           variant="accent"
         />
       </div>
@@ -496,7 +497,7 @@ export default function IntegrationDetailPage({
       )}
 
       {/* Empty state: connected but no observations */}
-      {observations.length === 0 && (
+      {totalObservations === 0 && (
         <div className="card mt-8 flex flex-col items-center justify-center py-16 text-center">
           <RefreshCw className="h-10 w-10 text-neutral-300 mb-4" />
           <h2 className="text-lg font-semibold text-neutral-700 font-display">
@@ -516,14 +517,14 @@ export default function IntegrationDetailPage({
         </div>
       )}
 
-      {/* Recent Observations Table */}
-      {recentObservations.length > 0 && (
+      {/* Observations Table */}
+      {totalObservations > 0 && (
         <>
           <h2 className="mt-8 mb-4 text-sm font-semibold text-neutral-700 font-body">
-            Recent Observations
+            Observations
           </h2>
           <DataTable
-            data={recentObservations}
+            data={observations}
             columns={tableColumns}
             rowConfig={{
               getRowKey: (obs) => obs.id,
@@ -531,6 +532,12 @@ export default function IntegrationDetailPage({
                 obs.isAbnormal
                   ? "bg-[var(--color-health-warning-bg)]/40"
                   : undefined,
+            }}
+            pagination={{
+              page,
+              pageSize: PAGE_SIZE,
+              total: totalObservations,
+              onPageChange: setPage,
             }}
           />
         </>
