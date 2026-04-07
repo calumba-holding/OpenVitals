@@ -157,7 +157,7 @@ export default function AppleHealthImportPage() {
         });
 
         setUploadProgress(100);
-        setImportJobId(jobId);
+        setImportJobId(jobId ?? null);
         setPhase("processing");
       } catch (err) {
         clearInterval(progressInterval);
