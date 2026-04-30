@@ -7,7 +7,8 @@ import type { NormalizationResult } from '@openvitals/ingestion';
 
 export async function materialize(
   ctx: WorkflowContext,
-  normalization: NormalizationResult
+  normalization: NormalizationResult,
+  options: { forceReview?: boolean } = {},
 ): Promise<void> {
   const db = getDb();
 
@@ -36,23 +37,24 @@ export async function materialize(
     const inserted = await db.insert(observations).values(rows).returning({ id: observations.id });
 
     // Emit events for each observation
-    for (const row of inserted) {
+    inserted.forEach((row, index) => {
+      const observation = normalized[index];
       emitEvent({
         type: 'observation.created',
         payload: {
           observationId: row.id,
-          metricCode: '',
-          category: '',
+          metricCode: observation?.metricCode ?? '',
+          category: observation?.category ?? '',
           importJobId: ctx.importJobId,
         },
         userId: ctx.userId,
         timestamp: new Date(),
       });
-    }
+    });
   }
 
   // Determine final status
-  const needsReview = flagged.length > 0;
+  const needsReview = flagged.length > 0 || options.forceReview === true;
   const finalStatus = needsReview ? 'review_needed' : 'completed';
 
   await db.update(importJobs)

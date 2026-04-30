@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { and, eq } from 'drizzle-orm';
 import { getDb } from '@openvitals/database/client';
 import {
@@ -9,6 +10,43 @@ import {
   observations,
 } from '@openvitals/database';
 import { getProvider, encrypt, decrypt } from '@/server/integrations';
+
+function getWebhookSecret(providerId: string): string | null {
+  const providerKey = `${providerId.toUpperCase().replace(/[^A-Z0-9]/g, '_')}_WEBHOOK_SECRET`;
+  return process.env[providerKey] ?? process.env.INTEGRATION_WEBHOOK_SECRET ?? null;
+}
+
+function safeEqual(a: string, b: string): boolean {
+  const left = Buffer.from(a);
+  const right = Buffer.from(b);
+  return left.length === right.length && timingSafeEqual(left, right);
+}
+
+function verifyWebhookRequest(
+  request: Request,
+  providerId: string,
+  rawBody: string,
+): boolean {
+  const secret = getWebhookSecret(providerId);
+  if (!secret) return false;
+
+  const authHeader = request.headers.get('authorization');
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.slice('Bearer '.length);
+    if (safeEqual(token, secret)) return true;
+  }
+
+  const rawSignature =
+    request.headers.get('x-openvitals-signature') ??
+    request.headers.get('x-webhook-signature');
+  if (!rawSignature) return false;
+
+  const signature = rawSignature.startsWith('sha256=')
+    ? rawSignature.slice('sha256='.length)
+    : rawSignature;
+  const expected = createHmac('sha256', secret).update(rawBody).digest('hex');
+  return safeEqual(signature, expected);
+}
 
 export async function POST(
   request: Request,
@@ -32,7 +70,20 @@ export async function POST(
     );
   }
 
-  const body = await request.json().catch(() => null);
+  const rawBody = await request.text();
+  if (!verifyWebhookRequest(request, providerId, rawBody)) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
+
+  const body = rawBody
+    ? (() => {
+        try {
+          return JSON.parse(rawBody) as unknown;
+        } catch {
+          return null;
+        }
+      })()
+    : null;
   if (!body) {
     return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
   }
@@ -74,7 +125,9 @@ export async function POST(
       await updateConnectionTokens(db, {
         id: connection.id,
         accessTokenEnc: encrypt(newTokens.accessToken),
-        refreshTokenEnc: encrypt(newTokens.refreshToken),
+        refreshTokenEnc: newTokens.refreshToken
+          ? encrypt(newTokens.refreshToken)
+          : connection.refreshTokenEnc,
         tokenExpiresAt: newTokens.expiresAt,
       });
       accessToken = newTokens.accessToken;
@@ -91,7 +144,9 @@ export async function POST(
         await updateConnectionTokens(db, {
           id: connection.id,
           accessTokenEnc: encrypt(newTokens.accessToken),
-          refreshTokenEnc: encrypt(newTokens.refreshToken),
+          refreshTokenEnc: newTokens.refreshToken
+            ? encrypt(newTokens.refreshToken)
+            : connection.refreshTokenEnc,
           tokenExpiresAt: newTokens.expiresAt,
         });
         newObservations = await provider.fetchWebhookRecord(

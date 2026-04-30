@@ -6,6 +6,7 @@ import {
   timestamp,
   date,
   integer,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -27,6 +28,7 @@ export const users = pgTable("users", {
   bloodType: varchar("blood_type", { length: 5 }),
   showOptimalRanges: boolean("show_optimal_ranges").default(true),
   onboardingStep: integer("onboarding_step").default(0).notNull(),
+  onboardingJson: jsonb("onboarding_json"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

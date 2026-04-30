@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server';
 import { eq, and, ne } from 'drizzle-orm';
 import { createRouter, protectedProcedure } from '../init';
 import { listObservations, getObservationTrend, getObservationWithProvenance, observations, importJobs } from '@openvitals/database';
+import { emitEvent } from '@openvitals/events';
 
 export const observationsRouter = createRouter({
   list: protectedProcedure
@@ -110,6 +111,31 @@ export const observationsRouter = createRouter({
         })
         .where(and(eq(observations.id, id), eq(observations.userId, ctx.userId)));
 
+      const changes: Record<string, { from: unknown; to: unknown }> = {};
+      if (corrections.valueNumeric !== undefined) {
+        changes.valueNumeric = { from: current.valueNumeric, to: corrections.valueNumeric };
+      }
+      if (corrections.valueText !== undefined) {
+        changes.valueText = { from: current.valueText, to: corrections.valueText };
+      }
+      if (corrections.metricCode !== undefined) {
+        changes.metricCode = { from: current.metricCode, to: corrections.metricCode };
+      }
+      if (corrections.unit !== undefined) {
+        changes.unit = { from: current.unit, to: corrections.unit };
+      }
+
+      emitEvent({
+        type: 'observation.corrected',
+        payload: {
+          observationId: id,
+          metricCode: corrections.metricCode ?? current.metricCode,
+          changes,
+        },
+        userId: ctx.userId,
+        timestamp: new Date(),
+      });
+
       return { success: true };
     }),
 
@@ -148,6 +174,13 @@ export const observationsRouter = createRouter({
             .where(and(eq(importJobs.id, jobId), eq(importJobs.userId, ctx.userId)));
         }
       }
+
+      emitEvent({
+        type: 'observation.confirmed',
+        payload: { observationId: input.id },
+        userId: ctx.userId,
+        timestamp: new Date(),
+      });
 
       return { success: true };
     }),

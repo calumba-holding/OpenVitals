@@ -36,6 +36,7 @@ export default function ImportJobDetailPage({
 
   const { data, isLoading } = trpc.importJobs.getDetail.useQuery({ id });
   const { data: metricsData } = trpc.metrics.list.useQuery();
+  const detailObservations = data?.observations;
   const precisionMap = new Map(
     (metricsData ?? []).map((m) => [m.id, m.displayPrecision] as const),
   );
@@ -47,28 +48,28 @@ export default function ImportJobDetailPage({
   });
 
   const grouped = useMemo(() => {
-    if (!data?.observations)
-      return new Map<string, NonNullable<typeof data>["observations"]>();
-    const map = new Map<string, typeof data.observations>();
-    for (const obs of data.observations) {
+    if (!detailObservations)
+      return new Map<string, NonNullable<typeof detailObservations>>();
+    const map = new Map<string, NonNullable<typeof detailObservations>>();
+    for (const obs of detailObservations) {
       const cat = obs.category;
       const existing = map.get(cat) ?? [];
       existing.push(obs);
       map.set(cat, existing);
     }
     return map;
-  }, [data?.observations]);
+  }, [detailObservations]);
 
   const stats = useMemo(() => {
-    if (!data?.observations)
+    if (!detailObservations)
       return { total: 0, abnormal: 0, confirmed: 0, pending: 0 };
-    const total = data.observations.length;
-    const abnormal = data.observations.filter((o) => o.isAbnormal).length;
-    const confirmed = data.observations.filter(
+    const total = detailObservations.length;
+    const abnormal = detailObservations.filter((o) => o.isAbnormal).length;
+    const confirmed = detailObservations.filter(
       (o) => o.status === "confirmed" || o.status === "corrected",
     ).length;
     return { total, abnormal, confirmed, pending: total - confirmed };
-  }, [data?.observations]);
+  }, [detailObservations]);
 
   if (isLoading) {
     return (

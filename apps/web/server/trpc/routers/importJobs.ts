@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
 import { createRouter, protectedProcedure } from "../init";
 import {
   createImportJob,
@@ -11,7 +12,60 @@ import {
   resetImportJobsForReprocessing,
   findImportJobByContentHash,
   resetImportJob,
+  importJobs,
+  type Database,
 } from "@openvitals/database";
+
+type WorkerTriggerParams = {
+  importJobId: string;
+  artifactId: string;
+  userId: string;
+  source: string;
+};
+
+async function triggerWorker(db: Database, params: WorkerTriggerParams) {
+  const workerUrl = process.env.RENDER_WORKER_URL ?? "http://localhost:4000";
+  const webhookSecret =
+    process.env.RENDER_WEBHOOK_SECRET ?? "dev-secret-change-me";
+
+  try {
+    const response = await fetch(`${workerUrl}/api/workflows/trigger`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${webhookSecret}`,
+      },
+      body: JSON.stringify({
+        importJobId: params.importJobId,
+        artifactId: params.artifactId,
+        userId: params.userId,
+      }),
+    });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      throw new Error(
+        `Worker returned ${response.status}${body ? `: ${body}` : ""}`,
+      );
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await db
+      .update(importJobs)
+      .set({
+        status: "failed",
+        errorMessage: `Failed to trigger ingestion worker: ${message}`,
+        updatedAt: new Date(),
+      })
+      .where(eq(importJobs.id, params.importJobId));
+
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message: `${params.source}: failed to trigger ingestion worker`,
+      cause: err,
+    });
+  }
+}
 
 export const importJobsRouter = createRouter({
   create: protectedProcedure
@@ -51,27 +105,11 @@ export const importJobsRouter = createRouter({
         dataSourceId: input.dataSourceId,
       });
 
-      // Trigger ingestion worker
-      const workerUrl =
-        process.env.RENDER_WORKER_URL ?? "http://localhost:4000";
-      const webhookSecret =
-        process.env.RENDER_WEBHOOK_SECRET ?? "dev-secret-change-me";
-      fetch(`${workerUrl}/api/workflows/trigger`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${webhookSecret}`,
-        },
-        body: JSON.stringify({
-          importJobId: result.importJobId,
-          artifactId: result.sourceArtifactId,
-          userId: ctx.userId,
-        }),
-      }).catch((err) => {
-        console.error(
-          "[importJobs.create] Failed to trigger worker:",
-          err.message,
-        );
+      await triggerWorker(ctx.db, {
+        importJobId: result.importJobId,
+        artifactId: result.sourceArtifactId,
+        userId: ctx.userId,
+        source: "importJobs.create",
       });
 
       return { duplicate: false as const, importJobId: result.importJobId };
@@ -176,27 +214,11 @@ export const importJobsRouter = createRouter({
         });
       }
 
-      const workerUrl =
-        process.env.RENDER_WORKER_URL ?? "http://localhost:4000";
-      const webhookSecret =
-        process.env.RENDER_WEBHOOK_SECRET ?? "dev-secret-change-me";
-
-      fetch(`${workerUrl}/api/workflows/trigger`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${webhookSecret}`,
-        },
-        body: JSON.stringify({
-          importJobId: job.id,
-          artifactId: job.sourceArtifactId,
-          userId: ctx.userId,
-        }),
-      }).catch((err) => {
-        console.error(
-          `[importJobs.reprocess] Failed to trigger worker for job=${job.id}:`,
-          err.message,
-        );
+      await triggerWorker(ctx.db, {
+        importJobId: job.id,
+        artifactId: job.sourceArtifactId,
+        userId: ctx.userId,
+        source: "importJobs.reprocess",
       });
 
       return { importJobId: job.id };
@@ -211,31 +233,26 @@ export const importJobsRouter = createRouter({
       return { count: 0 };
     }
 
-    // Trigger worker for each reset job
-    const workerUrl = process.env.RENDER_WORKER_URL ?? "http://localhost:4000";
-    const webhookSecret =
-      process.env.RENDER_WEBHOOK_SECRET ?? "dev-secret-change-me";
-
+    let triggered = 0;
+    let failed = 0;
     for (const job of result.jobs!) {
-      fetch(`${workerUrl}/api/workflows/trigger`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${webhookSecret}`,
-        },
-        body: JSON.stringify({
+      try {
+        await triggerWorker(ctx.db, {
           importJobId: job.id,
           artifactId: job.sourceArtifactId,
           userId: ctx.userId,
-        }),
-      }).catch((err) => {
+          source: "importJobs.reprocessAll",
+        });
+        triggered++;
+      } catch (err) {
+        failed++;
         console.error(
           `[importJobs.reprocessAll] Failed to trigger worker for job=${job.id}:`,
-          err.message,
+          err instanceof Error ? err.message : err,
         );
-      });
+      }
     }
 
-    return { count: result.count };
+    return { count: result.count, triggered, failed };
   }),
 });

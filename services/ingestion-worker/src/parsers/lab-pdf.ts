@@ -61,20 +61,24 @@ export async function parseLabPdf(ctx: WorkflowContext): Promise<ParseResult> {
     return { extractions: [], rawMetadata: { parser: 'lab-pdf', version: '0.1.0', error: 'parse_failed' } };
   }
 
-  const fallbackDate = parsed.collectionDate ?? new Date().toISOString().split('T')[0];
+  const fallbackDate = parsed.collectionDate ?? parsed.reportDate ?? null;
+  const rows = (parsed.results ?? []) as any[];
+  const missingDateCount = rows.filter((r) => !r.observedAt && !fallbackDate).length;
 
-  const extractions: RawExtraction[] = (parsed.results ?? []).map((r: any) => ({
-    analyte: r.analyte ?? '',
-    value: typeof r.value === 'number' ? r.value : null,
-    valueText: r.valueText ?? (r.value != null ? String(r.value) : null),
-    unit: r.unit ?? null,
-    referenceRangeLow: typeof r.referenceRangeLow === 'number' ? r.referenceRangeLow : null,
-    referenceRangeHigh: typeof r.referenceRangeHigh === 'number' ? r.referenceRangeHigh : null,
-    referenceRangeText: r.referenceRangeText ?? null,
-    isAbnormal: typeof r.isAbnormal === 'boolean' ? r.isAbnormal : null,
-    observedAt: r.observedAt ?? fallbackDate,
-    category: 'lab_result' as const,
-  }));
+  const extractions: RawExtraction[] = rows
+    .filter((r) => r.observedAt || fallbackDate)
+    .map((r) => ({
+      analyte: r.analyte ?? '',
+      value: typeof r.value === 'number' ? r.value : null,
+      valueText: r.valueText ?? (r.value != null ? String(r.value) : null),
+      unit: r.unit ?? null,
+      referenceRangeLow: typeof r.referenceRangeLow === 'number' ? r.referenceRangeLow : null,
+      referenceRangeHigh: typeof r.referenceRangeHigh === 'number' ? r.referenceRangeHigh : null,
+      referenceRangeText: r.referenceRangeText ?? null,
+      isAbnormal: typeof r.isAbnormal === 'boolean' ? r.isAbnormal : null,
+      observedAt: r.observedAt ?? fallbackDate,
+      category: 'lab_result' as const,
+    }));
 
   return {
     extractions,
@@ -82,6 +86,13 @@ export async function parseLabPdf(ctx: WorkflowContext): Promise<ParseResult> {
     collectionDate: parsed.collectionDate,
     reportDate: parsed.reportDate,
     labName: parsed.labName,
-    rawMetadata: { parser: 'lab-pdf', version: '0.1.0' },
+    rawMetadata: {
+      parser: 'lab-pdf',
+      version: '0.1.0',
+      ...(missingDateCount > 0 && {
+        needsReview: true,
+        reviewReason: `${missingDateCount} extracted lab result(s) were missing an observation date.`,
+      }),
+    },
   };
 }

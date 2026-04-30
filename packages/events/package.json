@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@openvitals/common": "workspace:*"
+    "@openvitals/common": "workspace:*",
+    "@openvitals/database": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",

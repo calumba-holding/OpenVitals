@@ -50,7 +50,7 @@ export function AdherenceSummary({ activeMedications }: AdherenceSummaryProps) {
         <div className="flex items-center gap-2">
           <Pill className="size-3.5 text-neutral-400" />
           <span className="text-[10px] font-mono font-bold uppercase tracking-[0.06em] text-neutral-500">
-            Today's Meds
+            Today&apos;s Meds
           </span>
         </div>
         <ChevronRight className="size-3 text-neutral-300" />

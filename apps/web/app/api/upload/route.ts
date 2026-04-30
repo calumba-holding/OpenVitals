@@ -37,6 +37,5 @@ export async function POST(request: Request) {
     contentType: file.type,
   });
 
-  // Store the URL returned by the provider (Vercel Blob uses URLs for head/download)
-  return NextResponse.json({ blobPath: result.url, contentHash });
+  return NextResponse.json({ blobPath: result.path, contentHash });
 }

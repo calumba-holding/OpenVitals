@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, gte, inArray, lte, type SQL } from 'drizzle-orm';
 import { createRouter, protectedProcedure, publicProcedure } from '../init';
-import { getActiveGrants, sharePolicies, accessGrants, shareTemplates, listObservations, users, medications, conditions } from '@openvitals/database';
+import { getActiveGrants, sharePolicies, accessGrants, shareTemplates, users, medications, conditions, observations as observationsTable } from '@openvitals/database';
+import { emitEvent } from '@openvitals/events';
 import crypto from 'crypto';
 
 export const sharingRouter = createRouter({
@@ -65,6 +66,17 @@ export const sharingRouter = createRouter({
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
       const shareUrl = `${baseUrl}/shared/${token}`;
 
+      emitEvent({
+        type: 'share.created',
+        payload: {
+          sharePolicyId: input.policyId,
+          grantId: grant!.id,
+          recipientEmail: input.recipientEmail,
+        },
+        userId: ctx.userId,
+        timestamp: new Date(),
+      });
+
       return { grantId: grant!.id, token, shareUrl };
     }),
 
@@ -93,6 +105,13 @@ export const sharingRouter = createRouter({
         .update(accessGrants)
         .set({ isActive: false, revokedAt: new Date(), updatedAt: new Date() })
         .where(eq(accessGrants.id, input.grantId));
+
+      emitEvent({
+        type: 'share.revoked',
+        payload: { grantId: input.grantId },
+        userId: ctx.userId,
+        timestamp: new Date(),
+      });
 
       return { success: true };
     }),
@@ -156,16 +175,29 @@ export const sharingRouter = createRouter({
 
       const categories = (grant.categories as string[]) ?? [];
 
-      // Fetch observations for shared categories
-      const obs = await listObservations(ctx.db, {
-        userId: grant.policyUserId,
-        limit: 200,
-        dateFrom: grant.dateFrom ?? undefined,
-        dateTo: grant.dateTo ?? undefined,
-      });
+      const observationCategories = categories.filter(
+        (category) => category !== 'medication' && category !== 'condition',
+      );
+      const obsWhere: SQL[] = [
+        eq(observationsTable.userId, grant.policyUserId),
+      ];
+      if (observationCategories.length > 0) {
+        obsWhere.push(inArray(observationsTable.category, observationCategories));
+      }
+      if (grant.dateFrom) {
+        obsWhere.push(gte(observationsTable.observedAt, grant.dateFrom));
+      }
+      if (grant.dateTo) {
+        obsWhere.push(lte(observationsTable.observedAt, grant.dateTo));
+      }
 
-      // Filter to shared categories
-      const filteredObs = obs.filter((o) => categories.includes(o.category ?? ''));
+      const filteredObs = observationCategories.length > 0
+        ? await ctx.db
+            .select()
+            .from(observationsTable)
+            .where(and(...obsWhere))
+            .orderBy(desc(observationsTable.observedAt))
+        : [];
 
       // For 'view' access level, strip exact values
       const observations = grant.accessLevel === 'view'
@@ -200,7 +232,7 @@ export const sharingRouter = createRouter({
         isActive: boolean | null;
         startDate: string | null;
       }> = [];
-      if (categories.includes('medications') && grant.accessLevel !== 'view') {
+      if (categories.includes('medication') && grant.accessLevel !== 'view') {
         const meds = await ctx.db
           .select({
             name: medications.name,
@@ -222,7 +254,7 @@ export const sharingRouter = createRouter({
         status: string | null;
         onsetDate: string | null;
       }> = [];
-      if (categories.includes('conditions') && grant.accessLevel !== 'view') {
+      if (categories.includes('condition') && grant.accessLevel !== 'view') {
         const conds = await ctx.db
           .select({
             name: conditions.name,
@@ -245,6 +277,13 @@ export const sharingRouter = createRouter({
           updatedAt: new Date(),
         })
         .where(eq(accessGrants.id, grant.grantId));
+
+      emitEvent({
+        type: 'share.accessed',
+        payload: { grantId: grant.grantId },
+        userId: grant.policyUserId,
+        timestamp: new Date(),
+      });
 
       return {
         sharerName: sharer?.name ?? 'Someone',

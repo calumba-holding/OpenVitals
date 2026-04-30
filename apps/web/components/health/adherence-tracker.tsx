@@ -47,8 +47,6 @@ export function AdherenceTracker({ medications }: AdherenceTrackerProps) {
     },
   });
 
-  if (activeMeds.length === 0) return null;
-
   // Build adherence map: medId -> date -> taken
   const adherenceMap = useMemo(() => {
     const map = new Map<string, Map<string, boolean>>();
@@ -59,6 +57,8 @@ export function AdherenceTracker({ medications }: AdherenceTrackerProps) {
     }
     return map;
   }, [adherenceData]);
+
+  if (activeMeds.length === 0) return null;
 
   // Calculate streak for each medication
   const getStreak = (medId: string): number => {

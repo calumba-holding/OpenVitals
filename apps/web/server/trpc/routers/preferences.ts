@@ -15,6 +15,7 @@ export const preferencesRouter = createRouter({
         bloodType: users.bloodType,
         showOptimalRanges: users.showOptimalRanges,
         onboardingStep: users.onboardingStep,
+        onboardingJson: users.onboardingJson,
       })
       .from(users)
       .where(eq(users.id, ctx.userId))
@@ -29,6 +30,7 @@ export const preferencesRouter = createRouter({
       bloodType: user?.bloodType ?? null,
       showOptimalRanges: user?.showOptimalRanges ?? true,
       onboardingStep: user?.onboardingStep ?? 0,
+      onboardingJson: user?.onboardingJson ?? null,
     };
   }),
 
@@ -44,6 +46,7 @@ export const preferencesRouter = createRouter({
           .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
           .optional(),
         onboardingStep: z.number().int().min(0).max(9).optional(),
+        onboardingJson: z.record(z.string(), z.unknown()).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -64,6 +67,9 @@ export const preferencesRouter = createRouter({
           ...(input.bloodType !== undefined && { bloodType: input.bloodType }),
           ...(input.onboardingStep !== undefined && {
             onboardingStep: input.onboardingStep,
+          }),
+          ...(input.onboardingJson !== undefined && {
+            onboardingJson: input.onboardingJson,
           }),
           updatedAt: new Date(),
         })

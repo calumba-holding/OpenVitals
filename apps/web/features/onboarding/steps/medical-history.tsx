@@ -4,7 +4,7 @@ import { StepLayout } from '../components/step-layout';
 import { StepButtons } from '../components/step-buttons';
 import { SearchableChecklist } from '../components/searchable-checklist';
 
-const conditions = [
+export const medicalHistoryConditions = [
   // Cardiovascular
   { id: 'hypertension', label: 'High blood pressure', category: 'Cardiovascular' },
   { id: 'heart_disease', label: 'Heart disease / CAD', category: 'Cardiovascular' },
@@ -85,7 +85,7 @@ export function MedicalHistoryStep({ data, onChange, onNext, onBack, onSkip, dir
       }
     >
       <SearchableChecklist
-        items={conditions}
+        items={medicalHistoryConditions}
         selected={data.conditions}
         onToggle={toggle}
         placeholder="Search conditions..."

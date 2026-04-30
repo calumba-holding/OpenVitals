@@ -1,6 +1,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { Readable } from 'node:stream';
+import { fileURLToPath } from 'node:url';
 import type { BlobStorageProvider } from './interface';
 
 export class LocalFSAdapter implements BlobStorageProvider {
@@ -11,6 +12,9 @@ export class LocalFSAdapter implements BlobStorageProvider {
   }
 
   private resolvePath(filePath: string): string {
+    if (filePath.startsWith('file://')) {
+      return fileURLToPath(filePath);
+    }
     return path.resolve(this.baseDir, filePath);
   }
 

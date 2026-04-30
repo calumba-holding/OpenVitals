@@ -16,6 +16,12 @@ export interface WorkflowContext {
 export async function processWorkflow(ctx: WorkflowContext): Promise<void> {
   console.log(`[workflow] Starting ingestion for job=${ctx.importJobId}`);
   const db = getDb();
+  emitEvent({
+    type: 'import.started',
+    payload: { importJobId: ctx.importJobId, artifactId: ctx.artifactId },
+    userId: ctx.userId,
+    timestamp: new Date(),
+  });
 
   try {
     // Step 1: Classify the document
@@ -34,10 +40,20 @@ export async function processWorkflow(ctx: WorkflowContext): Promise<void> {
     // Step 2: Parse the document
     const parseResult = await parse(ctx, classification.documentType);
     console.log(`[workflow] Extracted ${parseResult.extractions.length} results`);
+    const parseNeedsReview = parseResult.rawMetadata?.needsReview === true;
 
     if (parseResult.extractions.length === 0) {
+      const reviewReason = typeof parseResult.rawMetadata?.reviewReason === 'string'
+        ? parseResult.rawMetadata.reviewReason
+        : null;
       await db.update(importJobs)
-        .set({ status: 'completed', extractionCount: 0, completedAt: new Date() })
+        .set({
+          status: parseNeedsReview ? 'review_needed' : 'completed',
+          extractionCount: 0,
+          needsReview: parseNeedsReview,
+          errorMessage: reviewReason,
+          completedAt: parseNeedsReview ? null : new Date(),
+        })
         .where(eq(importJobs.id, ctx.importJobId));
       return;
     }
@@ -47,7 +63,7 @@ export async function processWorkflow(ctx: WorkflowContext): Promise<void> {
     console.log(`[workflow] Normalized ${normalization.normalized.length}, flagged ${normalization.flagged.length}`);
 
     // Step 4: Materialize to database
-    await materialize(ctx, normalization);
+    await materialize(ctx, normalization, { forceReview: parseNeedsReview });
     console.log(`[workflow] Materialized. Job complete.`);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

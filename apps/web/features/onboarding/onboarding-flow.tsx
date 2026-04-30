@@ -9,7 +9,7 @@ import { ProgressBar } from './components/progress-bar';
 import { WelcomeStep } from './steps/welcome';
 import { AboutYouStep, type AboutYouData } from './steps/about-you';
 import { GoalsStep, type GoalsData } from './steps/goals';
-import { MedicalHistoryStep, type MedicalHistoryData } from './steps/medical-history';
+import { MedicalHistoryStep, medicalHistoryConditions, type MedicalHistoryData } from './steps/medical-history';
 import { MedicationsStep, type MedicationsData } from './steps/medications';
 import { FamilyHistoryStep, type FamilyHistoryData } from './steps/family-history';
 import { LifestyleStep, type LifestyleData } from './steps/lifestyle';
@@ -40,6 +40,28 @@ const initialState: OnboardingState = {
   uploadRecords: { files: [] },
 };
 
+function serializeOnboardingData(
+  data: OnboardingState,
+  skippedSteps: Set<number>,
+): Record<string, unknown> {
+  return {
+    aboutYou: data.aboutYou,
+    goals: data.goals,
+    medicalHistory: data.medicalHistory,
+    medications: data.medications,
+    familyHistory: data.familyHistory,
+    lifestyle: data.lifestyle,
+    uploadRecords: {
+      files: data.uploadRecords.files.map((file) => ({
+        name: file.name,
+        type: file.type,
+        size: file.size,
+      })),
+    },
+    skippedSteps: Array.from(skippedSteps),
+  };
+}
+
 export function OnboardingFlow() {
   const router = useRouter();
   const [step, setStep] = useState<number | null>(null); // null = loading
@@ -51,6 +73,8 @@ export function OnboardingFlow() {
   const { data: session } = useSession();
   const { data: prefs, isLoading } = trpc.preferences.get.useQuery();
   const updatePreferences = trpc.preferences.update.useMutation();
+  const createCondition = trpc.conditions.create.useMutation();
+  const createMedication = trpc.medications.create.useMutation();
 
   // Initialize step from saved onboardingStep
   useEffect(() => {
@@ -106,10 +130,41 @@ export function OnboardingFlow() {
     goNext();
   }, [step, goNext]);
 
-  const handleComplete = useCallback(() => {
-    persistStep(ONBOARDING_COMPLETE);
+  const handleComplete = useCallback(async () => {
+    const conditionLabels = new Map(
+      medicalHistoryConditions.map((condition) => [condition.id, condition.label]),
+    );
+    const selectedConditions = data.medicalHistory.conditions
+      .map((id) => ({ id, name: conditionLabels.get(id) ?? id }))
+      .filter((condition) => condition.name.trim().length > 0);
+    const selectedMedications = data.medications.medications.filter((med) =>
+      med.name.trim().length > 0,
+    );
+
+    await Promise.all([
+      updatePreferences.mutateAsync({
+        onboardingStep: ONBOARDING_COMPLETE,
+        onboardingJson: serializeOnboardingData(data, skippedSteps),
+      }),
+      ...selectedConditions.map((condition) =>
+        createCondition.mutateAsync({
+          name: condition.name,
+          code: condition.id,
+          codeSystem: 'onboarding',
+          status: 'active',
+        }),
+      ),
+      ...selectedMedications.map((med) =>
+        createMedication.mutateAsync({
+          name: med.name.trim(),
+          dosage: med.dosage.trim() || undefined,
+          frequency: med.frequency.trim() || undefined,
+          category: 'prescription',
+        }),
+      ),
+    ]);
     router.push('/home');
-  }, [persistStep, router]);
+  }, [createCondition, createMedication, data, router, skippedSteps, updatePreferences]);
 
   const completedSections = (() => {
     const sections: string[] = [];

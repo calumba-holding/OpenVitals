@@ -187,9 +187,14 @@ export function normalizeExtractions(
     let finalUnit = extraction.unit ?? metric.unit ?? '';
 
     // Unit conversion if needed
-    if (extraction.unit && metric.unit && extraction.unit.toLowerCase() !== metric.unit.toLowerCase()) {
+    if (
+      extraction.value !== null &&
+      extraction.unit &&
+      metric.unit &&
+      extraction.unit.toLowerCase() !== metric.unit.toLowerCase()
+    ) {
       const converted = convertUnit(
-        extraction.value ?? 0,
+        extraction.value,
         extraction.unit,
         metric.unit,
         unitConversions,

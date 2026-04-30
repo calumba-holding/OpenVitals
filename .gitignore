@@ -25,6 +25,12 @@ coverage/
 e2e/test-results/
 e2e/report/
 e2e/.auth/
+e2e/screenshots/
+playwright-report/
+apps/web/e2e/test-results/
+apps/web/e2e/report/
+apps/web/e2e/.auth/
+apps/web/e2e/screenshots/
 
 # claude code
 .claude/worktrees/
